@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 
 
-import { Task, TaskPriority, TaskStatus } from './entities/task.entity';
+import { Task, TaskStatus } from './entities/task.entity';
 
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -108,6 +108,7 @@ remove(id:number){
 
 
 
+
 // ĐỔI TRẠNG THÁI
 
 async updateStatus(
@@ -127,6 +128,7 @@ async updateStatus(
     return this.findOne(id);
 
 }
+
 
 
 
@@ -162,6 +164,7 @@ async updatePriority(
 
 
 
+
 // ĐÁNH DẤU HOÀN THÀNH
 
 async completeTask(id:number){
@@ -179,6 +182,113 @@ async completeTask(id:number){
 
 }
 
+
+
+
+
+
+
+
+
+// TÌM KIẾM CÔNG VIỆC
+
+search(keyword:string){
+
+
+    return this.taskRepository.find({
+
+        where:[
+
+            {
+                title: Like(`%${keyword}%`)
+            },
+
+
+            {
+                description: Like(`%${keyword}%`)
+            }
+
+        ]
+
+    });
+
+
+}
+
+
+
+
+
+
+
+
+
+// TASK HÔM NAY
+
+today(){
+
+    const today = new Date();
+
+    today.setHours(0,0,0,0);
+
+
+    const tomorrow = new Date(today);
+
+    tomorrow.setDate(
+        tomorrow.getDate() + 1
+    );
+
+
+    return this.taskRepository
+    .createQueryBuilder('task')
+
+    .where(
+        'task.deadline >= :today',
+        {
+            today
+        }
+    )
+
+    .andWhere(
+        'task.deadline < :tomorrow',
+        {
+            tomorrow
+        }
+    )
+
+    .getMany();
+
+}
+
+
+
+
+
+
+
+
+
+// TASK QUÁ HẠN
+
+overdue(){
+
+    return this.taskRepository
+    .createQueryBuilder('task')
+
+    .where(
+        'task.deadline < NOW()'
+    )
+
+    .andWhere(
+        'task.status != :status',
+        {
+            status: TaskStatus.DONE
+        }
+    )
+
+    .getMany();
+
+}
 
 
 }

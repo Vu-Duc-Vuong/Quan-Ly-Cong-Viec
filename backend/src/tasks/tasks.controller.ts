@@ -6,7 +6,8 @@ Body,
 Param,
 Put,
 Delete,
-Patch
+Patch,
+Query
 } from '@nestjs/common';
 
 
@@ -38,6 +39,8 @@ private readonly tasksService:TasksService
 
 
 
+
+
 // GET /tasks
 
 @Get()
@@ -45,6 +48,56 @@ private readonly tasksService:TasksService
 findAll(){
 
     return this.tasksService.findAll();
+
+}
+
+
+
+
+
+
+
+// GET /tasks/search?keyword=abc
+
+@Get('search')
+
+search(
+@Query('keyword') keyword:string
+){
+
+    return this.tasksService.search(keyword);
+
+}
+
+
+
+
+
+
+
+// GET /tasks/today
+
+@Get('today')
+
+today(){
+
+    return this.tasksService.today();
+
+}
+
+
+
+
+
+
+
+// GET /tasks/overdue
+
+@Get('overdue')
+
+overdue(){
+
+    return this.tasksService.overdue();
 
 }
 
@@ -134,6 +187,7 @@ remove(
 
 
 
+
 // PATCH /tasks/1/status
 // Đổi trạng thái
 
@@ -161,6 +215,7 @@ updateStatus(
 
 
 
+
 // PATCH /tasks/1/priority
 // Đổi mức ưu tiên
 
@@ -180,6 +235,7 @@ updatePriority(
     );
 
 }
+
 
 
 
