@@ -1,44 +1,100 @@
 import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
+
 function Header() {
-  return (
-    <Navbar bg="light" expand="lg" className="shadow-sm">
-      <Container fluid>
 
-        <Navbar.Brand>
-          Hệ thống Quản lý công việc
-        </Navbar.Brand>
 
-        <Nav className="ms-auto">
+    return (
 
-          <NavDropdown
-            title="👤 Tài khoản"
-            id="user-dropdown"
-          >
-            <NavDropdown.Item
-              as={Link}
-              to="/profile"
-            >
-              Hồ sơ
-            </NavDropdown.Item>
 
-            <NavDropdown.Divider />
+        <Navbar 
+            bg="white"
+            className="shadow-sm"
+        >
 
-            <NavDropdown.Item
-              as={Link}
-              to="/login"
-            >
-              Đăng xuất
-            </NavDropdown.Item>
 
-          </NavDropdown>
+            <Container fluid>
 
-        </Nav>
 
-      </Container>
-    </Navbar>
-  );
+                <Navbar.Brand>
+
+                    <strong>
+                        Hệ thống Quản lý công việc
+                    </strong>
+
+                </Navbar.Brand>
+
+
+
+
+
+                <Nav className="ms-auto">
+
+
+                    <NavDropdown
+
+                        title="Tài khoản"
+
+                        id="user-dropdown"
+
+                    >
+
+
+                        <NavDropdown.Item
+
+                            as={Link}
+
+                            to="/profile"
+
+                        >
+
+                            Hồ sơ
+
+                        </NavDropdown.Item>
+
+
+
+
+
+                        <NavDropdown.Divider />
+
+
+
+
+
+                        <NavDropdown.Item
+
+                            as={Link}
+
+                            to="/login"
+
+                        >
+
+                            Đăng xuất
+
+                        </NavDropdown.Item>
+
+
+
+                    </NavDropdown>
+
+
+
+                </Nav>
+
+
+
+            </Container>
+
+
+        </Navbar>
+
+
+    );
+
+
 }
+
 
 export default Header;

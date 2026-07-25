@@ -29,8 +29,11 @@ function MainLayout() {
                 <Col md={10}>
 
 
-                    <Header />
+            <div className="sticky-top">
 
+              <Header />
+
+            </div>
 
 
                     <div className="main-content">
