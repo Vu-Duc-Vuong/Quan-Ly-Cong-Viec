@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 
 import {
     getTasks,
+    searchTasks,
+    getTodayTasks,
+    getOverdueTasks,
     createTask,
     updateTask,
     deleteTask,
@@ -14,15 +17,17 @@ import {
 function Tasks() {
 
 
-    const [tasks, setTasks] = useState([]);
+    const [tasks,setTasks] = useState([]);
+
+
+    const [editId,setEditId] = useState(null);
+
+
+    const [keyword,setKeyword] = useState("");
 
 
 
-    const [editId, setEditId] = useState(null);
-
-
-
-    const [form, setForm] = useState({
+    const [form,setForm] = useState({
 
         title:"",
         description:"",
@@ -35,19 +40,13 @@ function Tasks() {
 
 
 
-    const loadTasks = async () => {
 
-        try {
 
-            const response = await getTasks();
+    const loadTasks = async()=>{
 
-            setTasks(response.data);
+        const response = await getTasks();
 
-        } catch(error){
-
-            console.log(error);
-
-        }
+        setTasks(response.data);
 
     };
 
@@ -67,7 +66,8 @@ function Tasks() {
 
 
 
-    const handleChange = (e)=>{
+
+    const handleChange=(e)=>{
 
         setForm({
 
@@ -86,7 +86,7 @@ function Tasks() {
 
 
 
-    const resetForm = ()=>{
+    const resetForm=()=>{
 
         setForm({
 
@@ -96,6 +96,7 @@ function Tasks() {
             deadline:""
 
         });
+
 
         setEditId(null);
 
@@ -109,15 +110,14 @@ function Tasks() {
 
 
 
-    const handleSubmit = async(e)=>{
+    const handleSubmit=async(e)=>{
 
         e.preventDefault();
 
 
-
         if(!form.title.trim()){
 
-            alert("Vui lòng nhập tên công việc");
+            alert("Nhập tên công việc");
 
             return;
 
@@ -137,9 +137,7 @@ function Tasks() {
         }
 
 
-
         resetForm();
-
 
         loadTasks();
 
@@ -153,13 +151,10 @@ function Tasks() {
 
 
 
-    // đưa dữ liệu lên form sửa
-
-    const handleEdit = (task)=>{
+    const handleEdit=(task)=>{
 
 
         setEditId(task.id);
-
 
 
         setForm({
@@ -170,16 +165,10 @@ function Tasks() {
 
             priority:task.priority,
 
-            deadline:
-
-            task.deadline
-
+            deadline:task.deadline
             ?
-
             task.deadline.substring(0,10)
-
             :
-
             ""
 
         });
@@ -195,14 +184,104 @@ function Tasks() {
 
 
 
-    const handleComplete = async(id)=>{
+    const handleSearch=async()=>{
 
+
+        if(!keyword){
+
+            loadTasks();
+
+            return;
+
+        }
+
+
+        const response = await searchTasks(keyword);
+
+
+        setTasks(response.data);
+
+
+    };
+
+
+
+
+
+
+
+
+
+    const handleToday=async()=>{
+
+        const response = await getTodayTasks();
+
+        setTasks(response.data);
+
+    };
+
+
+
+
+
+
+
+
+
+    const handleOverdue=async()=>{
+
+        const response = await getOverdueTasks();
+
+        setTasks(response.data);
+
+    };
+
+
+
+
+
+
+
+
+
+    const handleStatus=(status)=>{
+
+
+        if(status==="ALL"){
+
+            loadTasks();
+
+            return;
+
+        }
+
+
+
+        setTasks(
+
+            tasks.filter(
+
+                task=>task.status===status
+
+            )
+
+        );
+
+    };
+
+
+
+
+
+
+
+
+
+    const handleComplete=async(id)=>{
 
         await completeTask(id);
 
-
         loadTasks();
-
 
     };
 
@@ -214,17 +293,13 @@ function Tasks() {
 
 
 
-    const handleDelete = async(id)=>{
-
+    const handleDelete=async(id)=>{
 
         await deleteTask(id);
 
-
         loadTasks();
 
-
     };
-
 
 
 
@@ -247,16 +322,86 @@ Quản lý công việc
 
 
 <h3>
+Tìm kiếm
+</h3>
+
+
+
+<input
+
+placeholder="Nhập tên công việc"
+
+value={keyword}
+
+onChange={(e)=>setKeyword(e.target.value)}
+
+/>
+
+
+<button onClick={handleSearch}>
+Tìm
+</button>
+
+
+
+
+
+<button onClick={handleToday}>
+Hôm nay
+</button>
+
+
+
+
+<button onClick={handleOverdue}>
+Quá hạn
+</button>
+
+
+
+
+
+<button onClick={()=>handleStatus("ALL")}>
+Tất cả
+</button>
+
+
+
+<button onClick={()=>handleStatus("TODO")}>
+TODO
+</button>
+
+
+
+<button onClick={()=>handleStatus("DOING")}>
+DOING
+</button>
+
+
+
+<button onClick={()=>handleStatus("DONE")}>
+DONE
+</button>
+
+
+
+
+
+<hr/>
+
+
+
+
+
+
+
+<h3>
 
 {
 editId
-
 ?
-
 "Sửa công việc"
-
 :
-
 "Thêm công việc"
 
 }
@@ -288,8 +433,6 @@ onChange={handleChange}
 
 
 
-
-
 <input
 
 name="description"
@@ -308,8 +451,6 @@ onChange={handleChange}
 
 
 
-
-
 <select
 
 name="priority"
@@ -321,19 +462,11 @@ onChange={handleChange}
 >
 
 
-<option value="LOW">
-LOW
-</option>
+<option value="LOW">LOW</option>
 
+<option value="MEDIUM">MEDIUM</option>
 
-<option value="MEDIUM">
-MEDIUM
-</option>
-
-
-<option value="HIGH">
-HIGH
-</option>
+<option value="HIGH">HIGH</option>
 
 
 </select>
@@ -341,8 +474,6 @@ HIGH
 
 
 <br/>
-
-
 
 
 
@@ -364,45 +495,17 @@ onChange={handleChange}
 
 
 
-
-
-<button type="submit">
+<button>
 
 {
-
 editId
-
 ?
-
 "Lưu"
-
 :
-
 "Thêm"
-
 }
 
 </button>
-
-
-
-{
-
-editId &&
-
-<button
-
-type="button"
-
-onClick={resetForm}
-
->
-
-Hủy
-
-</button>
-
-}
 
 
 
@@ -458,35 +561,25 @@ Hủy
 
 {
 
-tasks.map((task)=>(
+tasks.map(task=>(
 
 
 <tr key={task.id}>
 
 
-<td>
-{task.id}
-</td>
+<td>{task.id}</td>
 
 
-<td>
-{task.title}
-</td>
+<td>{task.title}</td>
 
 
-<td>
-{task.description}
-</td>
+<td>{task.description}</td>
 
 
-<td>
-{task.status}
-</td>
+<td>{task.status}</td>
 
 
-<td>
-{task.priority}
-</td>
+<td>{task.priority}</td>
 
 
 <td>
@@ -510,19 +603,14 @@ new Date(task.deadline).toLocaleDateString()
 
 
 
-
 <td>
 
 
 {
 
-task.status !== "DONE" &&
+task.status!=="DONE" &&
 
-<button
-
-onClick={()=>handleComplete(task.id)}
-
->
+<button onClick={()=>handleComplete(task.id)}>
 
 Hoàn thành
 
@@ -532,36 +620,19 @@ Hoàn thành
 
 
 
-
-
-<button
-
-onClick={()=>handleEdit(task)}
-
->
-
+<button onClick={()=>handleEdit(task)}>
 Sửa
-
 </button>
 
 
 
-
-
-<button
-
-onClick={()=>handleDelete(task.id)}
-
->
-
+<button onClick={()=>handleDelete(task.id)}>
 Xóa
-
 </button>
 
 
 
 </td>
-
 
 
 </tr>
@@ -574,7 +645,6 @@ Xóa
 
 
 </tbody>
-
 
 
 </table>
