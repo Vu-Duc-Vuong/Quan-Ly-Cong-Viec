@@ -19,11 +19,19 @@ function Tasks() {
 
     const [tasks,setTasks] = useState([]);
 
+    const [allTasks,setAllTasks] = useState([]);
+
 
     const [editId,setEditId] = useState(null);
 
 
     const [keyword,setKeyword] = useState("");
+
+
+    const [statusFilter,setStatusFilter] = useState("ALL");
+
+
+    const [priorityFilter,setPriorityFilter] = useState("ALL");
 
 
 
@@ -40,13 +48,13 @@ function Tasks() {
 
 
 
-
-
     const loadTasks = async()=>{
 
         const response = await getTasks();
 
         setTasks(response.data);
+
+        setAllTasks(response.data);
 
     };
 
@@ -59,7 +67,6 @@ function Tasks() {
         loadTasks();
 
     },[]);
-
 
 
 
@@ -96,7 +103,6 @@ function Tasks() {
             deadline:""
 
         });
-
 
         setEditId(null);
 
@@ -165,7 +171,8 @@ function Tasks() {
 
             priority:task.priority,
 
-            deadline:task.deadline
+            deadline:
+            task.deadline
             ?
             task.deadline.substring(0,10)
             :
@@ -184,25 +191,73 @@ function Tasks() {
 
 
 
+    const applyFilter=(data)=>{
+
+
+        let result=[...data];
+
+
+
+        if(statusFilter!=="ALL"){
+
+            result=result.filter(
+
+                task=>task.status===statusFilter
+
+            );
+
+        }
+
+
+
+
+        if(priorityFilter!=="ALL"){
+
+            result=result.filter(
+
+                task=>task.priority===priorityFilter
+
+            );
+
+        }
+
+
+
+        setTasks(result);
+
+
+    };
+
+
+
+
+
+
+
+
+
     const handleSearch=async()=>{
 
 
         if(!keyword){
 
-            loadTasks();
+            applyFilter(allTasks);
 
             return;
 
         }
 
 
+
         const response = await searchTasks(keyword);
 
 
-        setTasks(response.data);
+        applyFilter(response.data);
 
 
     };
+
+
 
 
 
@@ -216,10 +271,10 @@ function Tasks() {
 
         const response = await getTodayTasks();
 
+
         setTasks(response.data);
 
     };
-
 
 
 
@@ -232,6 +287,7 @@ function Tasks() {
 
         const response = await getOverdueTasks();
 
+
         setTasks(response.data);
 
     };
@@ -243,29 +299,107 @@ function Tasks() {
 
 
 
-
     const handleStatus=(status)=>{
 
 
-        if(status==="ALL"){
+        setStatusFilter(status);
 
-            loadTasks();
 
-            return;
+        let result=[...allTasks];
+
+
+
+        if(status!=="ALL"){
+
+            result=result.filter(
+
+                task=>task.status===status
+
+            );
 
         }
 
 
 
-        setTasks(
+        if(priorityFilter!=="ALL"){
 
-            tasks.filter(
+            result=result.filter(
 
-                task=>task.status===status
+                task=>task.priority===priorityFilter
 
-            )
+            );
 
-        );
+        }
+
+
+
+        setTasks(result);
+
+
+    };
+
+
+
+
+
+
+
+
+    const handlePriority=(priority)=>{
+
+
+        setPriorityFilter(priority);
+
+
+        let result=[...allTasks];
+
+
+
+        if(statusFilter!=="ALL"){
+
+            result=result.filter(
+
+                task=>task.status===statusFilter
+
+            );
+
+        }
+
+
+
+
+        if(priority!=="ALL"){
+
+            result=result.filter(
+
+                task=>task.priority===priority
+
+            );
+
+        }
+
+
+
+        setTasks(result);
+
+
+    };
+
+
+
+
+
+
+
+
+
+    const resetFilter=()=>{
+
+        setStatusFilter("ALL");
+
+        setPriorityFilter("ALL");
+
+        loadTasks();
 
     };
 
@@ -308,6 +442,7 @@ function Tasks() {
 
 
 
+
 return (
 
 <div>
@@ -324,7 +459,6 @@ Quản lý công việc
 <h3>
 Tìm kiếm
 </h3>
-
 
 
 <input
@@ -345,11 +479,9 @@ Tìm
 
 
 
-
 <button onClick={handleToday}>
 Hôm nay
 </button>
-
 
 
 
@@ -361,10 +493,14 @@ Quá hạn
 
 
 
+<h3>
+Lọc trạng thái
+</h3>
+
+
 <button onClick={()=>handleStatus("ALL")}>
 Tất cả
 </button>
-
 
 
 <button onClick={()=>handleStatus("TODO")}>
@@ -372,11 +508,9 @@ TODO
 </button>
 
 
-
 <button onClick={()=>handleStatus("DOING")}>
 DOING
 </button>
-
 
 
 <button onClick={()=>handleStatus("DONE")}>
@@ -387,9 +521,40 @@ DONE
 
 
 
+<h3>
+Lọc Priority
+</h3>
+
+
+<button onClick={()=>handlePriority("ALL")}>
+ALL
+</button>
+
+
+<button onClick={()=>handlePriority("LOW")}>
+LOW
+</button>
+
+
+<button onClick={()=>handlePriority("MEDIUM")}>
+MEDIUM
+</button>
+
+
+<button onClick={()=>handlePriority("HIGH")}>
+HIGH
+</button>
+
+
+<button onClick={resetFilter}>
+Reset
+</button>
+
+
+
+
+
 <hr/>
-
-
 
 
 
@@ -407,7 +572,6 @@ editId
 }
 
 </h3>
-
 
 
 
@@ -432,7 +596,6 @@ onChange={handleChange}
 <br/>
 
 
-
 <input
 
 name="description"
@@ -450,7 +613,6 @@ onChange={handleChange}
 <br/>
 
 
-
 <select
 
 name="priority"
@@ -461,12 +623,19 @@ onChange={handleChange}
 
 >
 
+<option value="LOW">
+LOW
+</option>
 
-<option value="LOW">LOW</option>
 
-<option value="MEDIUM">MEDIUM</option>
+<option value="MEDIUM">
+MEDIUM
+</option>
 
-<option value="HIGH">HIGH</option>
+
+<option value="HIGH">
+HIGH
+</option>
 
 
 </select>
@@ -508,18 +677,13 @@ editId
 </button>
 
 
-
 </form>
 
 
 
 
 
-
-
 <hr/>
-
-
 
 
 
@@ -533,25 +697,16 @@ editId
 <tr>
 
 <th>ID</th>
-
 <th>Tên</th>
-
 <th>Mô tả</th>
-
 <th>Status</th>
-
 <th>Priority</th>
-
 <th>Deadline</th>
-
 <th>Thao tác</th>
-
 
 </tr>
 
-
 </thead>
-
 
 
 
@@ -587,20 +742,14 @@ tasks.map(task=>(
 {
 
 task.deadline
-
 ?
-
 new Date(task.deadline).toLocaleDateString()
-
 :
-
 ""
 
 }
 
 </td>
-
-
 
 
 <td>
@@ -648,7 +797,6 @@ Xóa
 
 
 </table>
-
 
 
 
