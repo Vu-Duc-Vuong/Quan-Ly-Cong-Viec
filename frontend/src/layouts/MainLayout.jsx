@@ -4,30 +4,55 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 
+
 function MainLayout() {
-  return (
-    <Container fluid className="p-0">
 
-      <Row className="g-0">
 
-        <Col md={2} lg={2}>
-          <Sidebar />
-        </Col>
+    return (
 
-        <Col md={10} lg={10}>
+        <Container fluid className="p-0">
 
-          <Header />
 
-          <div className="p-4">
-            <Outlet />
-          </div>
+            <Row className="g-0">
 
-        </Col>
 
-      </Row>
+                <Col md={2}>
 
-    </Container>
-  );
+                    <Sidebar />
+
+                </Col>
+
+
+
+
+
+                <Col md={10}>
+
+
+                    <Header />
+
+
+
+                    <div className="main-content">
+
+                        <Outlet />
+
+                    </div>
+
+
+                </Col>
+
+
+
+            </Row>
+
+
+        </Container>
+
+    );
+
+
 }
+
 
 export default MainLayout;
