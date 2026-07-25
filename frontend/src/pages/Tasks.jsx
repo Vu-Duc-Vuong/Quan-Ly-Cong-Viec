@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
     getTasks,
     createTask,
+    updateTask,
     deleteTask,
     completeTask
 } from "../services/taskService";
@@ -14,6 +15,10 @@ function Tasks() {
 
 
     const [tasks, setTasks] = useState([]);
+
+
+
+    const [editId, setEditId] = useState(null);
 
 
 
@@ -60,6 +65,8 @@ function Tasks() {
 
 
 
+
+
     const handleChange = (e)=>{
 
         setForm({
@@ -71,6 +78,30 @@ function Tasks() {
         });
 
     };
+
+
+
+
+
+
+
+
+    const resetForm = ()=>{
+
+        setForm({
+
+            title:"",
+            description:"",
+            priority:"MEDIUM",
+            deadline:""
+
+        });
+
+        setEditId(null);
+
+    };
+
+
 
 
 
@@ -94,24 +125,69 @@ function Tasks() {
 
 
 
-        await createTask(form);
+        if(editId){
+
+            await updateTask(editId,form);
+
+        }
+        else{
+
+            await createTask(form);
+
+        }
 
 
 
-        setForm({
-
-            title:"",
-            description:"",
-            priority:"MEDIUM",
-            deadline:""
-
-        });
-
+        resetForm();
 
 
         loadTasks();
 
     };
+
+
+
+
+
+
+
+
+
+    // đưa dữ liệu lên form sửa
+
+    const handleEdit = (task)=>{
+
+
+        setEditId(task.id);
+
+
+
+        setForm({
+
+            title:task.title,
+
+            description:task.description || "",
+
+            priority:task.priority,
+
+            deadline:
+
+            task.deadline
+
+            ?
+
+            task.deadline.substring(0,10)
+
+            :
+
+            ""
+
+        });
+
+
+    };
+
+
 
 
 
@@ -121,11 +197,16 @@ function Tasks() {
 
     const handleComplete = async(id)=>{
 
+
         await completeTask(id);
+
 
         loadTasks();
 
+
     };
+
+
 
 
 
@@ -135,11 +216,16 @@ function Tasks() {
 
     const handleDelete = async(id)=>{
 
+
         await deleteTask(id);
+
 
         loadTasks();
 
+
     };
+
+
 
 
 
@@ -161,8 +247,23 @@ Quản lý công việc
 
 
 <h3>
-Thêm công việc
+
+{
+editId
+
+?
+
+"Sửa công việc"
+
+:
+
+"Thêm công việc"
+
+}
+
 </h3>
+
+
 
 
 
@@ -267,9 +368,41 @@ onChange={handleChange}
 
 <button type="submit">
 
-Thêm
+{
+
+editId
+
+?
+
+"Lưu"
+
+:
+
+"Thêm"
+
+}
 
 </button>
+
+
+
+{
+
+editId &&
+
+<button
+
+type="button"
+
+onClick={resetForm}
+
+>
+
+Hủy
+
+</button>
+
+}
 
 
 
@@ -331,19 +464,29 @@ tasks.map((task)=>(
 <tr key={task.id}>
 
 
-<td>{task.id}</td>
+<td>
+{task.id}
+</td>
 
 
-<td>{task.title}</td>
+<td>
+{task.title}
+</td>
 
 
-<td>{task.description}</td>
+<td>
+{task.description}
+</td>
 
 
-<td>{task.status}</td>
+<td>
+{task.status}
+</td>
 
 
-<td>{task.priority}</td>
+<td>
+{task.priority}
+</td>
 
 
 <td>
@@ -389,6 +532,22 @@ Hoàn thành
 
 
 
+
+
+<button
+
+onClick={()=>handleEdit(task)}
+
+>
+
+Sửa
+
+</button>
+
+
+
+
+
 <button
 
 onClick={()=>handleDelete(task.id)}
@@ -398,6 +557,7 @@ onClick={()=>handleDelete(task.id)}
 Xóa
 
 </button>
+
 
 
 </td>

@@ -1,6 +1,7 @@
 import api from "./api";
 
 
+
 // lấy tất cả task
 
 export const getTasks = () => {
@@ -17,6 +18,17 @@ export const getTasks = () => {
 export const createTask = (data) => {
 
     return api.post("/tasks", data);
+
+};
+
+
+
+
+// cập nhật task
+
+export const updateTask = (id, data) => {
+
+    return api.put(`/tasks/${id}`, data);
 
 };
 
