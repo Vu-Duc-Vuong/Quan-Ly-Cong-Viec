@@ -1,4 +1,35 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn
+} from 'typeorm';
+
+
+
+export enum TaskStatus {
+
+  TODO = 'TODO',
+
+  DOING = 'DOING',
+
+  DONE = 'DONE'
+
+}
+
+
+
+export enum TaskPriority {
+
+  LOW = 'LOW',
+
+  MEDIUM = 'MEDIUM',
+
+  HIGH = 'HIGH'
+
+}
+
 
 
 @Entity('tasks')
@@ -9,39 +40,67 @@ export class Task {
   id: number;
 
 
+
   @Column()
   title: string;
 
 
-  @Column({ nullable: true })
-  description: string;
+
+  @Column({
+    nullable:true
+  })
+  description:string;
+
 
 
   @Column({
-    default: 'TODO'
+
+    type:'enum',
+
+    enum:TaskStatus,
+
+    default:TaskStatus.TODO
+
   })
-  status: string;
+  status:TaskStatus;
+
+
 
 
   @Column({
-    default: 'MEDIUM'
+
+    type:'enum',
+
+    enum:TaskPriority,
+
+    default:TaskPriority.MEDIUM
+
   })
-  priority: string;
+  priority:TaskPriority;
+
+
 
 
   @Column({
-    type: 'datetime',
-    nullable: true
+
+    type:'datetime',
+
+    nullable:true
+
   })
-  deadline: Date;
+  deadline:Date;
+
+
 
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt:Date;
+
+
 
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt:Date;
 
 
 }

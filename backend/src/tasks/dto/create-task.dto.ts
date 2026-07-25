@@ -1,13 +1,22 @@
+import { TaskPriority, TaskStatus } from '../entities/task.entity';
+
+
 export class CreateTaskDto {
+
 
     title: string;
 
+
     description?: string;
 
-    status?: string;
 
-    priority?: string;
+    status?: TaskStatus;
+
+
+    priority?: TaskPriority;
+
 
     deadline?: Date;
+
 
 }
