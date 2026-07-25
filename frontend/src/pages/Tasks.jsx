@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "../assets/task.css";
 
 import {
     getTasks,
@@ -7,16 +8,19 @@ import {
     getOverdueTasks,
     createTask,
     updateTask,
-    deleteTask,
-    completeTask
+    deleteTask
 } from "../services/taskService";
-
 
 import TaskCard from "../components/TaskCard";
 
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Card from "react-bootstrap/Card";
+
+import {
+    Button,
+    Form,
+    Card,
+    Row,
+    Col
+} from "react-bootstrap";
 
 
 
@@ -40,6 +44,11 @@ function Tasks() {
     const [priorityFilter,setPriorityFilter] = useState("ALL");
 
 
+    const selectAll = tasks.length > 0 &&
+    tasks.every(task => task.status === "DONE");
+
+
+
 
     const [form,setForm] = useState({
 
@@ -54,18 +63,17 @@ function Tasks() {
 
 
 
+
     const loadTasks = async()=>{
 
-
         const response = await getTasks();
-
 
         setTasks(response.data);
 
         setAllTasks(response.data);
 
-
     };
+
 
 
 
@@ -75,6 +83,8 @@ function Tasks() {
         loadTasks();
 
     },[]);
+
+
 
 
 
@@ -92,6 +102,8 @@ function Tasks() {
         });
 
     };
+
+
 
 
 
@@ -121,9 +133,24 @@ function Tasks() {
 
 
 
+    const handleCancel=()=>{
+
+        resetForm();
+
+    };
+
+
+
+
+
+
+
+
+
     const handleSubmit=async(e)=>{
 
         e.preventDefault();
+
 
 
         if(!form.title.trim()){
@@ -133,6 +160,8 @@ function Tasks() {
             return;
 
         }
+
+
 
 
 
@@ -148,12 +177,15 @@ function Tasks() {
         }
 
 
+
         resetForm();
 
         loadTasks();
 
 
     };
+
+
 
 
 
@@ -177,21 +209,17 @@ function Tasks() {
             priority:task.priority,
 
             deadline:
-
             task.deadline
-
             ?
-
             task.deadline.substring(0,10)
-
             :
-
             ""
 
         });
 
 
     };
+
 
 
 
@@ -217,6 +245,8 @@ function Tasks() {
 
 
 
+
+
         if(priorityFilter!=="ALL"){
 
             result=result.filter(
@@ -227,10 +257,12 @@ function Tasks() {
 
 
 
+
         setTasks(result);
 
 
     };
+
 
 
 
@@ -266,6 +298,8 @@ function Tasks() {
 
 
 
+
+
     const handleToday=async()=>{
 
         const response = await getTodayTasks();
@@ -278,6 +312,9 @@ function Tasks() {
 
 
 
+
+
+
     const handleOverdue=async()=>{
 
         const response = await getOverdueTasks();
@@ -285,6 +322,7 @@ function Tasks() {
         setTasks(response.data);
 
     };
+
 
 
 
@@ -313,6 +351,8 @@ function Tasks() {
 
 
 
+
+
         if(priorityFilter!=="ALL"){
 
             result=result.filter(
@@ -320,6 +360,7 @@ function Tasks() {
             );
 
         }
+
 
 
         setTasks(result);
@@ -341,6 +382,7 @@ function Tasks() {
         setPriorityFilter(priority);
 
 
+
         let result=[...allTasks];
 
 
@@ -352,6 +394,8 @@ function Tasks() {
             );
 
         }
+
+
 
 
 
@@ -379,14 +423,12 @@ function Tasks() {
 
     const resetFilter=()=>{
 
-
         setStatusFilter("ALL");
 
         setPriorityFilter("ALL");
 
         loadTasks();
 
-
     };
 
 
@@ -395,13 +437,80 @@ function Tasks() {
 
 
 
-    const handleComplete=async(id)=>{
 
-        await completeTask(id);
 
-        loadTasks();
+    const handleComplete = async(task)=>{
 
-    };
+
+    const newStatus = 
+        task.status === "DONE"
+        ?
+        "TODO"
+        :
+        "DONE";
+
+
+    await updateTask(
+        task.id,
+        {
+            title: task.title,
+            description: task.description || "",
+            priority: task.priority,
+            deadline: task.deadline
+            ? task.deadline.substring(0,10)
+            :
+            "",
+            status:newStatus
+        }
+    );
+
+
+    loadTasks();
+
+
+};
+const handleSelectAll = async()=>{
+
+
+    const newStatus = selectAll
+        ?
+        "TODO"
+        :
+        "DONE";
+
+
+
+    await Promise.all(
+
+        tasks.map(task=>
+
+            updateTask(
+
+                task.id,
+
+                {
+                    title: task.title,
+                    description: task.description || "",
+                    priority: task.priority,
+                    deadline: task.deadline
+                    ?
+                    task.deadline.substring(0,10)
+                    :
+                    "",
+                    status:newStatus
+                }
+
+            )
+
+        )
+
+    );
+
+
+    loadTasks();
+
+
+};
 
 
 
@@ -411,31 +520,20 @@ function Tasks() {
 
     const handleDelete=async(id)=>{
 
-
         await deleteTask(id);
 
         loadTasks();
 
-
     };
-
-
-
-
-
-
-
 
 
 return (
 
-<div>
+<div className="task-page">
 
 
 <h2 className="mb-4">
-
 Quản lý công việc
-
 </h2>
 
 
@@ -443,176 +541,20 @@ Quản lý công việc
 
 
 
-<Card className="shadow-sm mb-4">
+<Row className="g-4">
 
 
-<Card.Body>
 
 
-<h5>
-Tìm kiếm và lọc
-</h5>
 
 
 
-<Form.Control
+{/* FORM */}
 
-placeholder="Nhập tên công việc"
+<Col md={4}>
 
-value={keyword}
 
-onChange={
-e=>setKeyword(e.target.value)
-}
-
-/>
-
-
-
-<div className="mt-3">
-
-
-<Button
-className="me-2"
-onClick={handleSearch}
->
-
-Tìm
-
-</Button>
-
-
-
-<Button
-variant="success"
-className="me-2"
-onClick={handleToday}
->
-
-Hôm nay
-
-</Button>
-
-
-
-
-<Button
-variant="danger"
-onClick={handleOverdue}
->
-
-Quá hạn
-
-</Button>
-
-
-</div>
-
-
-
-
-
-<hr/>
-
-
-
-
-<h6>Status</h6>
-
-
-{
-["ALL","TODO","DOING","DONE"].map(status=>(
-
-
-<Button
-
-key={status}
-
-variant="outline-primary"
-
-className="me-2"
-
-onClick={()=>handleStatus(status)}
-
->
-
-{status}
-
-</Button>
-
-
-))
-
-}
-
-
-
-
-
-
-<h6 className="mt-3">
-Priority
-</h6>
-
-
-
-{
-["ALL","LOW","MEDIUM","HIGH"].map(priority=>(
-
-
-<Button
-
-key={priority}
-
-variant="outline-warning"
-
-className="me-2"
-
-onClick={()=>handlePriority(priority)}
-
->
-
-{priority}
-
-</Button>
-
-
-))
-
-}
-
-
-
-
-
-<Button
-
-variant="secondary"
-
-onClick={resetFilter}
-
->
-
-Reset
-
-</Button>
-
-
-
-</Card.Body>
-
-
-</Card>
-
-
-
-
-
-
-
-
-
-<Card className="shadow-sm mb-4">
+<Card className="shadow-sm sticky-form">
 
 
 <Card.Body>
@@ -634,12 +576,14 @@ editId
 
 
 
+
+
 <Form onSubmit={handleSubmit}>
 
 
 <Form.Control
 
-className="mb-2"
+className="mb-3"
 
 name="title"
 
@@ -653,9 +597,11 @@ onChange={handleChange}
 
 
 
+
+
 <Form.Control
 
-className="mb-2"
+className="mb-3"
 
 name="description"
 
@@ -673,7 +619,7 @@ onChange={handleChange}
 
 <Form.Select
 
-className="mb-2"
+className="mb-3"
 
 name="priority"
 
@@ -705,9 +651,10 @@ HIGH
 
 
 
+
 <Form.Control
 
-className="mb-2"
+className="mb-3"
 
 type="date"
 
@@ -723,21 +670,258 @@ onChange={handleChange}
 
 
 
-<Button type="submit">
+
+<div className="d-flex gap-2">
+
+
+<Button
+
+className="flex-fill"
+
+type="submit"
+
+>
+
 
 {
 editId
 ?
-"Lưu"
+"Lưu thay đổi"
 :
-"Thêm"
+"Thêm công việc"
+
 }
+
 
 </Button>
 
 
 
+
+{
+
+editId &&
+
+
+<Button
+
+variant="outline-secondary"
+
+type="button"
+
+className="flex-fill"
+
+onClick={handleCancel}
+
+>
+
+Hủy
+
+</Button>
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
 </Form>
+
+
+
+</Card.Body>
+
+
+</Card>
+
+
+</Col>
+
+
+
+
+
+
+
+
+
+{/* LIST */}
+
+<Col md={8}>
+
+
+<Card className="shadow-sm mb-4">
+
+
+<Card.Body>
+
+
+<h5>
+Tìm kiếm và lọc
+</h5>
+
+
+
+
+
+
+<div className="search-box">
+
+
+<Form.Control
+
+placeholder="Nhập tên công việc"
+
+value={keyword}
+
+onChange={
+e=>setKeyword(e.target.value)
+}
+
+/>
+
+
+
+
+<Button onClick={handleSearch}>
+
+Tìm
+
+</Button>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div className="filter-line">
+
+
+<strong>
+Status:
+</strong>
+
+
+
+{
+["ALL","TODO","DOING","DONE"].map(status=>(
+
+
+<Button
+
+key={status}
+
+size="sm"
+
+variant={
+statusFilter===status
+?
+"primary"
+:
+"outline-secondary"
+}
+
+onClick={()=>handleStatus(status)}
+
+>
+
+{status}
+
+</Button>
+
+
+))
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div className="filter-line">
+
+
+<strong>
+Priority:
+</strong>
+
+
+
+
+{
+["ALL","LOW","MEDIUM","HIGH"].map(priority=>(
+
+
+<Button
+
+key={priority}
+
+size="sm"
+
+variant={
+priorityFilter===priority
+?
+"primary"
+:
+"outline-secondary"
+}
+
+onClick={()=>handlePriority(priority)}
+
+>
+
+{priority}
+
+</Button>
+
+
+))
+
+}
+
+
+
+
+
+
+<Button
+
+size="sm"
+
+variant="outline-secondary"
+
+onClick={resetFilter}
+
+>
+
+Reset
+
+</Button>
+
+
+
+</div>
+
+
+
 
 
 </Card.Body>
@@ -752,24 +936,118 @@ editId
 
 
 
-<div className="row">
+
+<Card className="shadow-sm task-table-card">
+
+
+<Card.Body>
+
+
+<h5>
+Danh sách công việc
+</h5>
+
+
+
+
+
+<table className="table table-hover align-middle">
+
+
+
+<thead>
+
+
+<tr>
+
+
+<th className="text-center">
+
+
+<input
+
+type="checkbox"
+
+checked={selectAll}
+
+onChange={handleSelectAll}
+
+title="Đánh dấu tất cả công việc"
+
+ />
+
+
+</th>
+
+
+
+<th>
+Tên
+</th>
+
+
+<th>
+Status
+</th>
+
+
+<th>
+Priority
+</th>
+
+
+<th>
+Deadline
+</th>
+
+
+<th>
+Thao tác
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+
+
+
+<tbody>
 
 
 {
 
+tasks.length===0
+
+?
+
+<tr>
+
+<td colSpan="6"
+
+className="text-center text-muted">
+
+Không có công việc
+
+</td>
+
+</tr>
+
+
+
+:
+
+
 tasks.map(task=>(
 
 
-<div
-
-className="col-md-4"
+<TaskCard
 
 key={task.id}
-
->
-
-
-<TaskCard
 
 task={task}
 
@@ -782,9 +1060,6 @@ onDelete={handleDelete}
 />
 
 
-</div>
-
-
 ))
 
 
@@ -792,10 +1067,26 @@ onDelete={handleDelete}
 
 
 
-</div>
+</tbody>
+
+
+</table>
 
 
 
+
+
+</Card.Body>
+
+
+</Card>
+
+
+
+</Col>
+
+
+</Row>
 
 
 </div>
@@ -805,7 +1096,6 @@ onDelete={handleDelete}
 
 
 }
-
 
 
 export default Tasks;

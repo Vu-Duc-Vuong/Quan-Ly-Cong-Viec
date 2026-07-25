@@ -1,122 +1,343 @@
-import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
+import {
+    Button,
+    OverlayTrigger,
+    Tooltip
+} from "react-bootstrap";
 
 
 function TaskCard({
     task,
-    onComplete,
     onEdit,
-    onDelete
+    onDelete,
+    onComplete
 }) {
 
 
     return (
 
-        <Card className="mb-3 shadow-sm">
+<tr>
 
 
-            <Card.Body>
+<td className="text-center">
 
 
-                <Card.Title>
+<input
 
-                    {task.title}
+type="checkbox"
 
-                </Card.Title>
+checked={task.status === "DONE"}
 
+onChange={() => onComplete(task)}
 
-
-                <Card.Text>
-
-                    {task.description}
-
-                </Card.Text>
+/>
 
 
-
-                <p>
-                    Status:
-                    <b> {task.status}</b>
-                </p>
-
-
-
-                <p>
-                    Priority:
-                    <b> {task.priority}</b>
-                </p>
-
-
-
-                {
-                    task.deadline &&
-
-                    <p>
-
-                        Deadline:
-
-                        {
-                            " "
-                            +
-                            new Date(task.deadline)
-                            .toLocaleDateString()
-                        }
-
-                    </p>
-                }
+</td>
 
 
 
 
-                {
-                    task.status !== "DONE" &&
-
-                    <Button
-                    variant="success"
-                    className="me-2"
-                    onClick={()=>onComplete(task.id)}
-                    >
-
-                        Hoàn thành
-
-                    </Button>
-
-                }
 
 
+<td>
 
 
-                <Button
-                variant="warning"
-                className="me-2"
-                onClick={()=>onEdit(task)}
-                >
+<span
 
-                    Sửa
+className={
+task.status === "DONE"
+?
+"task-done"
+:
+""
+}
 
-                </Button>
+>
+
+{task.title}
+
+
+</span>
 
 
 
 
-                <Button
-                variant="danger"
-                onClick={()=>onDelete(task.id)}
-                >
 
-                    Xóa
-
-                </Button>
+{
+task.description &&
 
 
+<OverlayTrigger
+
+placement="top"
+
+overlay={
+
+<Tooltip>
+
+{task.description}
+
+</Tooltip>
+
+}
+
+>
 
 
-            </Card.Body>
+<span
+
+className="description-icon"
+
+>
+
+📝
+
+</span>
 
 
-        </Card>
+</OverlayTrigger>
+
+
+}
+
+
+
+</td>
+
+
+
+
+
+
+
+
+
+<td>
+
+
+{
+
+task.status === "TODO"
+
+&&
+
+<span className="status-badge todo">
+
+TODO
+
+</span>
+
+}
+
+
+
+
+{
+
+task.status === "DOING"
+
+&&
+
+<span className="status-badge doing">
+
+DOING
+
+</span>
+
+}
+
+
+
+
+{
+
+task.status === "DONE"
+
+&&
+
+<span className="status-badge done">
+
+DONE
+
+</span>
+
+}
+
+
+
+</td>
+
+
+
+
+
+
+
+
+
+<td>
+
+
+{
+
+task.priority === "HIGH"
+
+&&
+
+<span className="priority high">
+
+HIGH
+
+</span>
+
+}
+
+
+
+
+{
+
+task.priority === "MEDIUM"
+
+&&
+
+<span className="priority medium">
+
+MEDIUM
+
+</span>
+
+}
+
+
+
+
+{
+
+task.priority === "LOW"
+
+&&
+
+<span className="priority low">
+
+LOW
+
+</span>
+
+}
+
+
+
+</td>
+
+
+
+
+
+
+
+
+
+<td>
+
+
+{
+
+task.deadline
+
+?
+
+new Date(task.deadline)
+.toLocaleDateString()
+
+:
+
+<span className="deadline-empty">
+
+Chưa có
+
+</span>
+
+}
+
+
+
+</td>
+
+
+
+
+
+
+
+
+
+<td>
+
+
+<div className="task-actions">
+
+
+
+
+
+<Button
+
+size="sm"
+
+variant="outline-primary"
+
+onClick={()=>onEdit(task)}
+
+>
+
+Sửa
+
+</Button>
+
+
+
+
+
+
+
+
+<Button
+
+size="sm"
+
+variant="outline-danger"
+
+onClick={()=>onDelete(task.id)}
+
+>
+
+Xóa
+
+</Button>
+
+
+
+
+
+
+</div>
+
+
+</td>
+
+
+
+
+
+
+
+
+</tr>
+
 
     );
+
 
 }
 

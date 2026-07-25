@@ -9,12 +9,45 @@ function Sidebar() {
 
 
 
+    const menuItems = [
+
+        {
+            name:"Trang chủ",
+            path:"/"
+        },
+
+        {
+            name:"Công việc",
+            path:"/tasks"
+        },
+
+        {
+            name:"Thống kê",
+            path:"/statistics"
+        },
+
+        {
+            name:"Danh mục",
+            path:"/categories"
+        },
+
+        {
+            name:"Lịch làm việc",
+            path:"/calendar"
+        }
+
+    ];
+
+
+
+
     return (
+
 
         <div className="sidebar p-3">
 
 
-            <h3 className="sidebar-title text-center mb-4">
+            <h3 className="sidebar-title text-center mb-5">
 
                 Manager
 
@@ -23,119 +56,57 @@ function Sidebar() {
 
 
 
-            <Nav className="flex-column">
-
-
-                <Nav.Link
-
-                    as={Link}
-
-                    to="/"
-
-                    className={
-                        "menu-item " +
-                        (
-                            location.pathname === "/"
-                            ?
-                            "menu-active"
-                            :
-                            ""
-                        )
-                    }
-
-                >
-
-                    Trang chủ
-
-                </Nav.Link>
+            <Nav className="flex-column gap-2">
 
 
 
+                {
+                    menuItems.map(item=>(
 
 
-                <Nav.Link
+                        <Nav.Link
 
-                    as={Link}
+                            key={item.path}
 
-                    to="/tasks"
+                            as={Link}
 
-                    className={
-                        "menu-item " +
-                        (
-                            location.pathname === "/tasks"
-                            ?
-                            "menu-active"
-                            :
-                            ""
-                        )
-                    }
-
-                >
-
-                    Công việc
-
-                </Nav.Link>
+                            to={item.path}
 
 
+                            className={
+
+                                location.pathname === item.path
+
+                                ?
+
+                                "menu-item menu-active"
+
+                                :
+
+                                "menu-item"
+
+                            }
 
 
+                        >
 
-                <Nav.Link
-
-                    as={Link}
-
-                    to="/statistics"
-
-                    className="menu-item"
-
-                >
-
-                    Thống kê
-
-                </Nav.Link>
+                            {item.name}
 
 
+                        </Nav.Link>
 
 
-
-                <Nav.Link
-
-                    as={Link}
-
-                    to="/categories"
-
-                    className="menu-item"
-
-                >
-
-                    Danh mục
-
-                </Nav.Link>
-
-
-
-
-
-                <Nav.Link
-
-                    as={Link}
-
-                    to="/calendar"
-
-                    className="menu-item"
-
-                >
-
-                    Lịch làm việc
-
-                </Nav.Link>
+                    ))
+                }
 
 
 
             </Nav>
 
 
+
         </div>
+
 
     );
 
