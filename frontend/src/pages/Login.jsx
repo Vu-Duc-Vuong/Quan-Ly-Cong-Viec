@@ -1,5 +1,18 @@
-function Login() {
-  return <h2>Đăng nhập</h2>;
+function Login(){
+
+    return (
+
+        <div>
+
+            <h2>
+                Đăng nhập
+            </h2>
+
+        </div>
+
+    );
+
 }
+
 
 export default Login;

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-
 import {
     getTasks,
     searchTasks,
@@ -11,6 +10,13 @@ import {
     deleteTask,
     completeTask
 } from "../services/taskService";
+
+
+import TaskCard from "../components/TaskCard";
+
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import Card from "react-bootstrap/Card";
 
 
 
@@ -50,14 +56,16 @@ function Tasks() {
 
     const loadTasks = async()=>{
 
+
         const response = await getTasks();
+
 
         setTasks(response.data);
 
         setAllTasks(response.data);
 
-    };
 
+    };
 
 
 
@@ -67,7 +75,6 @@ function Tasks() {
         loadTasks();
 
     },[]);
-
 
 
 
@@ -92,7 +99,6 @@ function Tasks() {
 
 
 
-
     const resetForm=()=>{
 
         setForm({
@@ -104,11 +110,10 @@ function Tasks() {
 
         });
 
+
         setEditId(null);
 
     };
-
-
 
 
 
@@ -147,9 +152,8 @@ function Tasks() {
 
         loadTasks();
 
+
     };
-
-
 
 
 
@@ -163,6 +167,7 @@ function Tasks() {
         setEditId(task.id);
 
 
+
         setForm({
 
             title:task.title,
@@ -172,17 +177,21 @@ function Tasks() {
             priority:task.priority,
 
             deadline:
+
             task.deadline
+
             ?
+
             task.deadline.substring(0,10)
+
             :
+
             ""
 
         });
 
 
     };
-
 
 
 
@@ -201,22 +210,17 @@ function Tasks() {
         if(statusFilter!=="ALL"){
 
             result=result.filter(
-
                 task=>task.status===statusFilter
-
             );
 
         }
 
 
 
-
         if(priorityFilter!=="ALL"){
 
             result=result.filter(
-
                 task=>task.priority===priorityFilter
-
             );
 
         }
@@ -227,7 +231,6 @@ function Tasks() {
 
 
     };
-
 
 
 
@@ -263,14 +266,9 @@ function Tasks() {
 
 
 
-
-
-
-
     const handleToday=async()=>{
 
         const response = await getTodayTasks();
-
 
         setTasks(response.data);
 
@@ -280,13 +278,9 @@ function Tasks() {
 
 
 
-
-
-
     const handleOverdue=async()=>{
 
         const response = await getOverdueTasks();
-
 
         setTasks(response.data);
 
@@ -312,9 +306,7 @@ function Tasks() {
         if(status!=="ALL"){
 
             result=result.filter(
-
                 task=>task.status===status
-
             );
 
         }
@@ -324,19 +316,17 @@ function Tasks() {
         if(priorityFilter!=="ALL"){
 
             result=result.filter(
-
                 task=>task.priority===priorityFilter
-
             );
 
         }
-
 
 
         setTasks(result);
 
 
     };
+
 
 
 
@@ -358,22 +348,17 @@ function Tasks() {
         if(statusFilter!=="ALL"){
 
             result=result.filter(
-
                 task=>task.status===statusFilter
-
             );
 
         }
 
 
 
-
         if(priority!=="ALL"){
 
             result=result.filter(
-
                 task=>task.priority===priority
-
             );
 
         }
@@ -392,8 +377,8 @@ function Tasks() {
 
 
 
-
     const resetFilter=()=>{
+
 
         setStatusFilter("ALL");
 
@@ -401,9 +386,8 @@ function Tasks() {
 
         loadTasks();
 
+
     };
-
-
 
 
 
@@ -425,13 +409,13 @@ function Tasks() {
 
 
 
-
-
     const handleDelete=async(id)=>{
+
 
         await deleteTask(id);
 
         loadTasks();
+
 
     };
 
@@ -448,107 +432,81 @@ return (
 <div>
 
 
-<h2>
+<h2 className="mb-4">
+
 Quản lý công việc
+
 </h2>
 
 
 
 
 
-<h3>
-Tìm kiếm
-</h3>
+
+<Card className="shadow-sm mb-4">
 
 
-<input
+<Card.Body>
+
+
+<h5>
+Tìm kiếm và lọc
+</h5>
+
+
+
+<Form.Control
 
 placeholder="Nhập tên công việc"
 
 value={keyword}
 
-onChange={(e)=>setKeyword(e.target.value)}
+onChange={
+e=>setKeyword(e.target.value)
+}
 
 />
 
 
-<button onClick={handleSearch}>
+
+<div className="mt-3">
+
+
+<Button
+className="me-2"
+onClick={handleSearch}
+>
+
 Tìm
-</button>
+
+</Button>
 
 
 
+<Button
+variant="success"
+className="me-2"
+onClick={handleToday}
+>
 
-<button onClick={handleToday}>
 Hôm nay
-</button>
+
+</Button>
 
 
 
-<button onClick={handleOverdue}>
+
+<Button
+variant="danger"
+onClick={handleOverdue}
+>
+
 Quá hạn
-</button>
+
+</Button>
 
 
-
-
-
-<h3>
-Lọc trạng thái
-</h3>
-
-
-<button onClick={()=>handleStatus("ALL")}>
-Tất cả
-</button>
-
-
-<button onClick={()=>handleStatus("TODO")}>
-TODO
-</button>
-
-
-<button onClick={()=>handleStatus("DOING")}>
-DOING
-</button>
-
-
-<button onClick={()=>handleStatus("DONE")}>
-DONE
-</button>
-
-
-
-
-
-<h3>
-Lọc Priority
-</h3>
-
-
-<button onClick={()=>handlePriority("ALL")}>
-ALL
-</button>
-
-
-<button onClick={()=>handlePriority("LOW")}>
-LOW
-</button>
-
-
-<button onClick={()=>handlePriority("MEDIUM")}>
-MEDIUM
-</button>
-
-
-<button onClick={()=>handlePriority("HIGH")}>
-HIGH
-</button>
-
-
-<button onClick={resetFilter}>
-Reset
-</button>
+</div>
 
 
 
@@ -559,8 +517,108 @@ Reset
 
 
 
+<h6>Status</h6>
 
-<h3>
+
+{
+["ALL","TODO","DOING","DONE"].map(status=>(
+
+
+<Button
+
+key={status}
+
+variant="outline-primary"
+
+className="me-2"
+
+onClick={()=>handleStatus(status)}
+
+>
+
+{status}
+
+</Button>
+
+
+))
+
+}
+
+
+
+
+
+
+<h6 className="mt-3">
+Priority
+</h6>
+
+
+
+{
+["ALL","LOW","MEDIUM","HIGH"].map(priority=>(
+
+
+<Button
+
+key={priority}
+
+variant="outline-warning"
+
+className="me-2"
+
+onClick={()=>handlePriority(priority)}
+
+>
+
+{priority}
+
+</Button>
+
+
+))
+
+}
+
+
+
+
+
+<Button
+
+variant="secondary"
+
+onClick={resetFilter}
+
+>
+
+Reset
+
+</Button>
+
+
+
+</Card.Body>
+
+
+</Card>
+
+
+
+
+
+
+
+
+
+<Card className="shadow-sm mb-4">
+
+
+<Card.Body>
+
+
+<h5>
 
 {
 editId
@@ -571,15 +629,17 @@ editId
 
 }
 
-</h3>
+</h5>
 
 
 
 
-<form onSubmit={handleSubmit}>
+<Form onSubmit={handleSubmit}>
 
 
-<input
+<Form.Control
+
+className="mb-2"
 
 name="title"
 
@@ -593,10 +653,9 @@ onChange={handleChange}
 
 
 
-<br/>
+<Form.Control
 
-
-<input
+className="mb-2"
 
 name="description"
 
@@ -610,10 +669,11 @@ onChange={handleChange}
 
 
 
-<br/>
 
 
-<select
+<Form.Select
+
+className="mb-2"
 
 name="priority"
 
@@ -622,6 +682,7 @@ value={form.priority}
 onChange={handleChange}
 
 >
+
 
 <option value="LOW">
 LOW
@@ -638,15 +699,15 @@ HIGH
 </option>
 
 
-</select>
+</Form.Select>
 
 
 
-<br/>
 
 
+<Form.Control
 
-<input
+className="mb-2"
 
 type="date"
 
@@ -660,11 +721,9 @@ onChange={handleChange}
 
 
 
-<br/>
 
 
-
-<button>
+<Button type="submit">
 
 {
 editId
@@ -674,44 +733,26 @@ editId
 "Thêm"
 }
 
-</button>
-
-
-</form>
+</Button>
 
 
 
+</Form>
 
 
-<hr/>
+</Card.Body>
 
 
-
-
-
-<table border="1" width="100%">
-
-
-<thead>
-
-<tr>
-
-<th>ID</th>
-<th>Tên</th>
-<th>Mô tả</th>
-<th>Status</th>
-<th>Priority</th>
-<th>Deadline</th>
-<th>Thao tác</th>
-
-</tr>
-
-</thead>
+</Card>
 
 
 
 
-<tbody>
+
+
+
+
+<div className="row">
 
 
 {
@@ -719,72 +760,29 @@ editId
 tasks.map(task=>(
 
 
-<tr key={task.id}>
+<div
+
+className="col-md-4"
+
+key={task.id}
+
+>
 
 
-<td>{task.id}</td>
+<TaskCard
+
+task={task}
+
+onComplete={handleComplete}
+
+onEdit={handleEdit}
+
+onDelete={handleDelete}
+
+/>
 
 
-<td>{task.title}</td>
-
-
-<td>{task.description}</td>
-
-
-<td>{task.status}</td>
-
-
-<td>{task.priority}</td>
-
-
-<td>
-
-{
-
-task.deadline
-?
-new Date(task.deadline).toLocaleDateString()
-:
-""
-
-}
-
-</td>
-
-
-<td>
-
-
-{
-
-task.status!=="DONE" &&
-
-<button onClick={()=>handleComplete(task.id)}>
-
-Hoàn thành
-
-</button>
-
-}
-
-
-
-<button onClick={()=>handleEdit(task)}>
-Sửa
-</button>
-
-
-
-<button onClick={()=>handleDelete(task.id)}>
-Xóa
-</button>
-
-
-
-</td>
-
-
-</tr>
+</div>
 
 
 ))
@@ -793,19 +791,21 @@ Xóa
 }
 
 
-</tbody>
+
+</div>
 
 
-</table>
 
 
 
 </div>
 
+
 );
 
 
 }
+
 
 
 export default Tasks;
