@@ -5,15 +5,24 @@ Post,
 Body,
 Param,
 Put,
-Delete
+Delete,
+Patch
 } from '@nestjs/common';
+
 
 
 import { TasksService } from './tasks.service';
 
+
 import { CreateTaskDto } from './dto/create-task.dto';
 
 import { UpdateTaskDto } from './dto/update-task.dto';
+
+
+import { UpdateStatusDto } from './dto/update-status.dto';
+
+import { UpdatePriorityDto } from './dto/update-priority.dto';
+
 
 
 
@@ -27,15 +36,21 @@ private readonly tasksService:TasksService
 
 
 
+
+
 // GET /tasks
 
 @Get()
 
 findAll(){
 
-return this.tasksService.findAll();
+    return this.tasksService.findAll();
 
 }
+
+
+
+
 
 
 
@@ -47,9 +62,13 @@ findOne(
 @Param('id') id:string
 ){
 
-return this.tasksService.findOne(+id);
+    return this.tasksService.findOne(+id);
 
 }
+
+
+
+
 
 
 
@@ -61,9 +80,13 @@ create(
 @Body() createTaskDto:CreateTaskDto
 ){
 
-return this.tasksService.create(createTaskDto);
+    return this.tasksService.create(createTaskDto);
 
 }
+
+
+
+
 
 
 
@@ -72,18 +95,23 @@ return this.tasksService.create(createTaskDto);
 @Put(':id')
 
 update(
+
 @Param('id') id:string,
 
 @Body() updateTaskDto:UpdateTaskDto
 
 ){
 
-return this.tasksService.update(
-+id,
-updateTaskDto
-);
+    return this.tasksService.update(
+        +id,
+        updateTaskDto
+    );
 
 }
+
+
+
+
 
 
 
@@ -95,9 +123,86 @@ remove(
 @Param('id') id:string
 ){
 
-return this.tasksService.remove(+id);
+    return this.tasksService.remove(+id);
 
 }
+
+
+
+
+
+
+
+
+// PATCH /tasks/1/status
+// Đổi trạng thái
+
+@Patch(':id/status')
+
+updateStatus(
+
+@Param('id') id:string,
+
+@Body() updateStatusDto:UpdateStatusDto
+
+){
+
+    return this.tasksService.updateStatus(
+        +id,
+        updateStatusDto
+    );
+
+}
+
+
+
+
+
+
+
+
+// PATCH /tasks/1/priority
+// Đổi mức ưu tiên
+
+@Patch(':id/priority')
+
+updatePriority(
+
+@Param('id') id:string,
+
+@Body() updatePriorityDto:UpdatePriorityDto
+
+){
+
+    return this.tasksService.updatePriority(
+        +id,
+        updatePriorityDto
+    );
+
+}
+
+
+
+
+
+
+
+
+// PATCH /tasks/1/complete
+// Đánh dấu hoàn thành
+
+@Patch(':id/complete')
+
+completeTask(
+
+@Param('id') id:string
+
+){
+
+    return this.tasksService.completeTask(+id);
+
+}
+
 
 
 }
