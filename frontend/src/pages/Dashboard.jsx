@@ -5,7 +5,6 @@ import {
 } from "../services/taskService";
 
 
-
 function Dashboard() {
 
 
@@ -45,9 +44,7 @@ function Dashboard() {
 
 
 
-
     const total = tasks.length;
-
 
 
     const todo = tasks.filter(
@@ -65,8 +62,6 @@ function Dashboard() {
     const done = tasks.filter(
         task=>task.status==="DONE"
     ).length;
-
-
 
 
 
@@ -100,145 +95,110 @@ function Dashboard() {
 
 
 
+    const cards = [
+
+        {
+            title:"Tổng công việc",
+            value:total
+        },
+
+        {
+            title:"Chưa làm",
+            value:todo
+        },
+
+        {
+            title:"Đang làm",
+            value:doing
+        },
+
+        {
+            title:"Hoàn thành",
+            value:done
+        },
+
+        {
+            title:"Ưu tiên cao",
+            value:high
+        },
+
+        {
+            title:"Quá hạn",
+            value:overdue
+        }
+
+    ];
+
+
+
+
+
+
+
 
     return (
 
         <div>
 
 
-            <h2>
+            <h2 className="mb-1">
+
                 Dashboard
+
             </h2>
 
 
+            <p className="text-muted">
 
-            <p>
                 Tổng quan công việc
+
             </p>
 
 
 
 
 
-            <div
-            style={{
-                display:"grid",
-                gridTemplateColumns:"repeat(3,1fr)",
-                gap:"20px"
-            }}
-            >
 
 
+            <div className="row g-3 mb-4">
 
 
+                {
+                    cards.map((card,index)=>(
 
-                <div className="card p-3">
 
-                    <h4>
-                        Tổng công việc
-                    </h4>
+                        <div 
+                        className="col-md-4"
+                        key={index}
+                        >
 
-                    <h2>
-                        {total}
-                    </h2>
 
-                </div>
+                            <div className="metric-card">
 
 
+                                <div className="metric-title">
 
+                                    {card.title}
 
+                                </div>
 
 
 
-                <div className="card p-3">
+                                <div className="metric-number">
 
-                    <h4>
-                        Chưa làm
-                    </h4>
+                                    {card.value}
 
-                    <h2>
-                        {todo}
-                    </h2>
+                                </div>
 
-                </div>
 
+                            </div>
 
 
+                        </div>
 
 
-
-
-
-                <div className="card p-3">
-
-                    <h4>
-                        Đang làm
-                    </h4>
-
-                    <h2>
-                        {doing}
-                    </h2>
-
-                </div>
-
-
-
-
-
-
-
-
-                <div className="card p-3">
-
-                    <h4>
-                        Hoàn thành
-                    </h4>
-
-                    <h2>
-                        {done}
-                    </h2>
-
-                </div>
-
-
-
-
-
-
-
-
-                <div className="card p-3">
-
-                    <h4>
-                        Ưu tiên cao
-                    </h4>
-
-                    <h2>
-                        {high}
-                    </h2>
-
-                </div>
-
-
-
-
-
-
-
-
-                <div className="card p-3">
-
-                    <h4>
-                        Quá hạn
-                    </h4>
-
-                    <h2>
-                        {overdue}
-                    </h2>
-
-                </div>
-
-
+                    ))
+                }
 
 
 
@@ -250,107 +210,141 @@ function Dashboard() {
 
 
 
-            <hr/>
+            <div className="card border-0 shadow-sm p-3">
+
+
+                <h4 className="mb-3">
+
+                    Danh sách công việc gần đây
+
+                </h4>
 
 
 
 
 
-            <h3>
-                Danh sách công việc gần đây
-            </h3>
+                <table className="table table-custom mb-0">
+
+
+                    <thead>
+
+
+                        <tr>
+
+
+                            <th>
+
+                                Tên
+
+                            </th>
+
+
+                            <th>
+
+                                Status
+
+                            </th>
+
+
+                            <th>
+
+                                Priority
+
+                            </th>
+
+
+                            <th>
+
+                                Deadline
+
+                            </th>
+
+
+                        </tr>
+
+
+                    </thead>
 
 
 
 
 
-            <table className="table table-bordered">
 
 
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Tên
-                        </th>
+                    <tbody>
 
 
-                        <th>
-                            Status
-                        </th>
+                        {
+                            tasks.slice(0,5).map(task=>(
 
 
-                        <th>
-                            Priority
-                        </th>
+                                <tr key={task.id}>
 
 
-                        <th>
-                            Deadline
-                        </th>
+                                    <td>
 
+                                        {task.title}
 
-                    </tr>
-
-                </thead>
+                                    </td>
 
 
 
+                                    <td>
 
+                                        {task.status}
 
-                <tbody>
-
-
-                    {
-                        tasks.slice(0,5).map(task=>(
-
-
-                            <tr key={task.id}>
-
-
-                                <td>
-                                    {task.title}
-                                </td>
-
-
-                                <td>
-                                    {task.status}
-                                </td>
-
-
-                                <td>
-                                    {task.priority}
-                                </td>
-
-
-                                <td>
-
-                                    {
-                                        task.deadline
-                                        ?
-                                        new Date(task.deadline)
-                                        .toLocaleDateString()
-                                        :
-                                        ""
-                                    }
-
-                                </td>
-
-
-                            </tr>
-
-
-                        ))
-                    }
-
-
-                </tbody>
+                                    </td>
 
 
 
-            </table>
+                                    <td>
 
+                                        {task.priority}
+
+                                    </td>
+
+
+
+                                    <td>
+
+
+                                        {
+
+                                            task.deadline
+
+                                            ?
+
+                                            new Date(task.deadline)
+                                            .toLocaleDateString()
+
+                                            :
+
+                                            ""
+
+                                        }
+
+
+                                    </td>
+
+
+
+                                </tr>
+
+
+                            ))
+                        }
+
+
+
+                    </tbody>
+
+
+
+                </table>
+
+
+
+            </div>
 
 
 
