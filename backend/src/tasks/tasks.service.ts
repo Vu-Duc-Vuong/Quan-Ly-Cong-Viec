@@ -4,7 +4,7 @@ import { Repository, Like } from 'typeorm';
 
 
 import { Task, TaskStatus } from './entities/task.entity';
-
+import { User } from '../users/user.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
@@ -19,11 +19,15 @@ export class TasksService {
 
 constructor(
 
-@InjectRepository(Task)
+  @InjectRepository(Task)
 
-private taskRepository: Repository<Task>
+  private taskRepository: Repository<Task>,
 
-){}
+  @InjectRepository(User)
+
+  private userRepository: Repository<User>,
+
+) {}
 
 
 
@@ -31,9 +35,28 @@ private taskRepository: Repository<Task>
 
 // CREATE
 
-create(createTaskDto: CreateTaskDto){
+async create(
 
-    return this.taskRepository.save(createTaskDto);
+  userId: number,
+
+  createTaskDto: CreateTaskDto,
+
+) {
+
+const user = await this.userRepository.findOneBy({
+  id: userId,
+});
+
+if (!user) {
+  throw new Error('User not found');
+}
+
+const task = this.taskRepository.create({
+  ...createTaskDto,
+  user,
+});
+
+return this.taskRepository.save(task);
 
 }
 
@@ -45,9 +68,21 @@ create(createTaskDto: CreateTaskDto){
 
 // READ ALL
 
-findAll(){
+async findAll(userId: number) {
 
-    return this.taskRepository.find();
+  return this.taskRepository.find({
+
+    where: {
+
+      user: {
+
+        id: userId,
+
+      },
+
+    },
+
+  });
 
 }
 
@@ -59,11 +94,35 @@ findAll(){
 
 // READ ONE
 
-findOne(id:number){
+async findOne(
 
-    return this.taskRepository.findOneBy({
-        id
-    });
+  id: number,
+
+  userId: number,
+
+) {
+
+  return this.taskRepository.findOne({
+
+    where: {
+
+      id,
+
+      user: {
+
+        id: userId,
+
+      },
+
+    },
+
+    relations: {
+
+      user: true,
+
+    },
+
+  });
 
 }
 
@@ -75,15 +134,53 @@ findOne(id:number){
 
 // UPDATE
 
-update(
-    id:number,
-    updateTaskDto:UpdateTaskDto
-){
+async update(
 
-    return this.taskRepository.update(
-        id,
-        updateTaskDto
-    );
+  id: number,
+
+  userId: number,
+
+  updateTaskDto: UpdateTaskDto,
+
+) {
+
+  const task = await this.taskRepository.findOne({
+
+    where: {
+
+      id,
+
+      user: {
+
+        id: userId,
+
+      },
+
+    },
+
+  });
+
+  if (!task) {
+
+    throw new Error('Task not found');
+
+  }
+
+  await this.taskRepository.update(
+
+    id,
+
+    updateTaskDto,
+
+  );
+
+  return this.findOne(
+
+    id,
+
+    userId,
+
+  );
 
 }
 
@@ -95,10 +192,16 @@ update(
 
 // DELETE
 
-remove(id:number){
-
-    return this.taskRepository.delete(id);
-
+async remove(
+  id: number,
+  userId: number,
+) {
+  return this.taskRepository.delete({
+    id,
+    user: {
+      id: userId,
+    },
+  });
 }
 
 
@@ -112,20 +215,38 @@ remove(id:number){
 // ĐỔI TRẠNG THÁI
 
 async updateStatus(
-    id:number,
-    updateStatusDto:UpdateStatusDto
-){
+  id: number,
+  userId: number,
+  updateStatusDto: UpdateStatusDto,
+) {
 
+  const task = await this.taskRepository.findOne({
 
-    await this.taskRepository.update(
-        id,
-        {
-            status:updateStatusDto.status
-        }
-    );
+    where: {
 
+      id,
 
-    return this.findOne(id);
+      user: {
+
+        id: userId,
+
+      },
+
+    },
+
+  });
+
+  if (!task) {
+
+    throw new Error('Task not found');
+
+  }
+
+  task.status = updateStatusDto.status;
+
+  await this.taskRepository.save(task);
+
+  return this.findOne(id, userId);
 
 }
 
@@ -140,20 +261,38 @@ async updateStatus(
 // ĐỔI MỨC ƯU TIÊN
 
 async updatePriority(
-    id:number,
-    updatePriorityDto:UpdatePriorityDto
-){
+  id: number,
+  userId: number,
+  updatePriorityDto: UpdatePriorityDto,
+) {
 
+  const task = await this.taskRepository.findOne({
 
-    await this.taskRepository.update(
-        id,
-        {
-            priority:updatePriorityDto.priority
-        }
-    );
+    where: {
 
+      id,
 
-    return this.findOne(id);
+      user: {
+
+        id: userId,
+
+      },
+
+    },
+
+  });
+
+  if (!task) {
+
+    throw new Error('Task not found');
+
+  }
+
+  task.priority = updatePriorityDto.priority;
+
+  await this.taskRepository.save(task);
+
+  return task;
 
 }
 
@@ -167,18 +306,38 @@ async updatePriority(
 
 // ĐÁNH DẤU HOÀN THÀNH
 
-async completeTask(id:number){
+async completeTask(
+  id: number,
+  userId: number,
+) {
 
+  const task = await this.taskRepository.findOne({
 
-    await this.taskRepository.update(
-        id,
-        {
-            status:TaskStatus.DONE
-        }
-    );
+    where: {
 
+      id,
 
-    return this.findOne(id);
+      user: {
+
+        id: userId,
+
+      },
+
+    },
+
+  });
+
+  if (!task) {
+
+    throw new Error('Task not found');
+
+  }
+
+  task.status = TaskStatus.DONE;
+
+  await this.taskRepository.save(task);
+
+  return task;
 
 }
 
@@ -192,26 +351,54 @@ async completeTask(id:number){
 
 // TÌM KIẾM CÔNG VIỆC
 
-search(keyword:string){
+async search(
+  userId: number,
+  keyword: string,
+) {
 
+  const tasks = await this.taskRepository.find({
 
-    return this.taskRepository.find({
+    where: [
 
-        where:[
+      {
+        title: Like(`%${keyword}%`),
+        user: {
+          id: userId,
+        },
+      },
 
-            {
-                title: Like(`%${keyword}%`)
-            },
+      {
+        description: Like(`%${keyword}%`),
+        user: {
+          id: userId,
+        },
+      },
 
+    ],
 
-            {
-                description: Like(`%${keyword}%`)
-            }
+    relations: {
+      user: true,
+    },
 
-        ]
+  });
 
-    });
+  return tasks.map(task => ({
 
+    ...task,
+
+    user: {
+
+      id: task.user.id,
+
+      fullName: task.user.fullName,
+
+      email: task.user.email,
+
+      avatar: task.user.avatar,
+
+    },
+
+  }));
 
 }
 

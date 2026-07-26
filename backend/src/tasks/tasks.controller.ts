@@ -1,264 +1,206 @@
 import {
-Controller,
-Get,
-Post,
-Body,
-Param,
-Put,
-Delete,
-Patch,
-Query
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  Patch,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
-
-
 
 import { TasksService } from './tasks.service';
 
-
 import { CreateTaskDto } from './dto/create-task.dto';
-
 import { UpdateTaskDto } from './dto/update-task.dto';
-
-
 import { UpdateStatusDto } from './dto/update-status.dto';
-
 import { UpdatePriorityDto } from './dto/update-priority.dto';
 
-
-
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { GetUser } from '../auth/get-user.decorator';
 
 @Controller('tasks')
 export class TasksController {
 
+  constructor(
+    private readonly tasksService: TasksService,
+  ) {}
 
-constructor(
-private readonly tasksService:TasksService
-){}
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  findAll(
+    @GetUser() user: any,
+  ) {
+    return this.tasksService.findAll(user.id);
+  }
 
+  @Get('search')
 
-
-
-
-
-
-// GET /tasks
-
-@Get()
-
-findAll(){
-
-    return this.tasksService.findAll();
-
-}
-
-
-
-
-
-
-
-// GET /tasks/search?keyword=abc
-
-@Get('search')
+@UseGuards(JwtAuthGuard)
 
 search(
-@Query('keyword') keyword:string
-){
 
-    return this.tasksService.search(keyword);
+  @GetUser() user: any,
+
+  @Query('keyword') keyword: string,
+
+) {
+
+  return this.tasksService.search(
+
+    user.id,
+
+    keyword,
+
+  );
 
 }
 
-
-
-
-
-
-
-// GET /tasks/today
-
-@Get('today')
-
-today(){
-
+  @Get('today')
+  today() {
     return this.tasksService.today();
+  }
 
-}
-
-
-
-
-
-
-
-// GET /tasks/overdue
-
-@Get('overdue')
-
-overdue(){
-
+  @Get('overdue')
+  overdue() {
     return this.tasksService.overdue();
+  }
 
-}
-
-
-
-
-
-
-
-// GET /tasks/1
-
-@Get(':id')
-
+  @Get(':id')
+@UseGuards(JwtAuthGuard)
 findOne(
-@Param('id') id:string
-){
 
-    return this.tasksService.findOne(+id);
+  @Param('id') id: string,
 
-}
+  @GetUser() user: any,
 
+) {
 
+  return this.tasksService.findOne(
 
+    +id,
 
+    user.id,
 
-
-
-// POST /tasks
-
-@Post()
-
-create(
-@Body() createTaskDto:CreateTaskDto
-){
-
-    return this.tasksService.create(createTaskDto);
+  );
 
 }
 
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  create(
+    @GetUser() user: any,
+    @Body() createTaskDto: CreateTaskDto,
+  ) {
+    return this.tasksService.create(
+      user.id,
+      createTaskDto,
+    );
+  }
 
-
-
-
-
-
-// PUT /tasks/1
-
-@Put(':id')
-
+  @Put(':id')
+@UseGuards(JwtAuthGuard)
 update(
 
-@Param('id') id:string,
+  @Param('id') id: string,
 
-@Body() updateTaskDto:UpdateTaskDto
+  @GetUser() user: any,
 
-){
+  @Body() updateTaskDto: UpdateTaskDto,
 
-    return this.tasksService.update(
-        +id,
-        updateTaskDto
-    );
+) {
+
+  return this.tasksService.update(
+
+    +id,
+
+    user.id,
+
+    updateTaskDto,
+
+  );
 
 }
 
-
-
-
-
-
-
-// DELETE /tasks/1
-
-@Delete(':id')
-
+  @Delete(':id')
+@UseGuards(JwtAuthGuard)
 remove(
-@Param('id') id:string
-){
-
-    return this.tasksService.remove(+id);
-
+  @Param('id') id: string,
+  @GetUser() user: any,
+) {
+  return this.tasksService.remove(
+    +id,
+    user.id,
+  );
 }
 
-
-
-
-
-
-
-
-
-// PATCH /tasks/1/status
-// Đổi trạng thái
-
-@Patch(':id/status')
-
+  @Patch(':id/status')
+@UseGuards(JwtAuthGuard)
 updateStatus(
 
-@Param('id') id:string,
+  @Param('id') id: string,
 
-@Body() updateStatusDto:UpdateStatusDto
+  @GetUser() user: any,
 
-){
+  @Body() updateStatusDto: UpdateStatusDto,
 
-    return this.tasksService.updateStatus(
-        +id,
-        updateStatusDto
-    );
+) {
+
+  return this.tasksService.updateStatus(
+
+    +id,
+
+    user.id,
+
+    updateStatusDto,
+
+  );
 
 }
 
-
-
-
-
-
-
-
-
-// PATCH /tasks/1/priority
-// Đổi mức ưu tiên
-
-@Patch(':id/priority')
-
+  @Patch(':id/priority')
+@UseGuards(JwtAuthGuard)
 updatePriority(
 
-@Param('id') id:string,
+  @Param('id') id: string,
 
-@Body() updatePriorityDto:UpdatePriorityDto
+  @GetUser() user: any,
 
-){
+  @Body() updatePriorityDto: UpdatePriorityDto,
 
-    return this.tasksService.updatePriority(
-        +id,
-        updatePriorityDto
-    );
+) {
+
+  return this.tasksService.updatePriority(
+
+    +id,
+
+    user.id,
+
+    updatePriorityDto,
+
+  );
 
 }
 
-
-
-
-
-
-
-
-
-// PATCH /tasks/1/complete
-// Đánh dấu hoàn thành
-
-@Patch(':id/complete')
-
+  @Patch(':id/complete')
+@UseGuards(JwtAuthGuard)
 completeTask(
 
-@Param('id') id:string
+  @Param('id') id: string,
 
-){
+  @GetUser() user: any,
 
-    return this.tasksService.completeTask(+id);
+) {
+
+  return this.tasksService.completeTask(
+
+    +id,
+
+    user.id,
+
+  );
 
 }
-
-
-
 }

@@ -3,10 +3,11 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  ManyToOne,
 } from 'typeorm';
 
-
+import { User } from '../../users/user.entity';
 
 export enum TaskStatus {
 
@@ -14,11 +15,9 @@ export enum TaskStatus {
 
   DOING = 'DOING',
 
-  DONE = 'DONE'
+  DONE = 'DONE',
 
 }
-
-
 
 export enum TaskPriority {
 
@@ -26,81 +25,68 @@ export enum TaskPriority {
 
   MEDIUM = 'MEDIUM',
 
-  HIGH = 'HIGH'
+  HIGH = 'HIGH',
 
 }
-
-
 
 @Entity('tasks')
 export class Task {
 
-
   @PrimaryGeneratedColumn()
   id: number;
-
-
 
   @Column()
   title: string;
 
-
-
   @Column({
-    nullable:true
+    nullable: true,
   })
-  description:string;
-
-
+  description: string;
 
   @Column({
 
-    type:'enum',
+    type: 'enum',
 
-    enum:TaskStatus,
+    enum: TaskStatus,
 
-    default:TaskStatus.TODO
+    default: TaskStatus.TODO,
 
   })
-  status:TaskStatus;
-
-
-
+  status: TaskStatus;
 
   @Column({
 
-    type:'enum',
+    type: 'enum',
 
-    enum:TaskPriority,
+    enum: TaskPriority,
 
-    default:TaskPriority.MEDIUM
+    default: TaskPriority.MEDIUM,
 
   })
-  priority:TaskPriority;
-
-
-
+  priority: TaskPriority;
 
   @Column({
 
-    type:'datetime',
+    type: 'datetime',
 
-    nullable:true
+    nullable: true,
 
   })
-  deadline:Date;
+  deadline: Date;
 
+  @ManyToOne(
 
+    () => User,
 
+    user => user.tasks,
+
+  )
+  user: User;
 
   @CreateDateColumn()
-  createdAt:Date;
-
-
-
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updatedAt:Date;
-
+  updatedAt: Date;
 
 }
