@@ -8,6 +8,7 @@ import { UsersModule } from "../users/users.module";
 import { JwtStrategy } from "./jwt.strategy";
 import { MailModule } from "../mail/mail.module";
 
+
 @Module({
 
   imports: [
@@ -16,7 +17,9 @@ import { MailModule } from "../mail/mail.module";
 
     MailModule,
 
-    PassportModule,
+    PassportModule.register({
+      defaultStrategy: 'jwt',
+    }),
 
     JwtModule.register({
 
@@ -32,6 +35,7 @@ import { MailModule } from "../mail/mail.module";
 
   ],
 
+
   providers: [
 
     AuthService,
@@ -40,12 +44,23 @@ import { MailModule } from "../mail/mail.module";
 
   ],
 
+
   controllers: [
 
     AuthController,
 
   ],
 
+
+  exports: [
+
+    PassportModule,
+
+    JwtModule,
+
+  ],
+
 })
+
 
 export class AuthModule {}
