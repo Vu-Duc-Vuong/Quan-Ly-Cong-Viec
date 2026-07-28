@@ -262,9 +262,6 @@ function Tasks() {
 
 
     };
-
-
-
     const handleChangeStatus=async(task,status)=>{
 
 
@@ -728,32 +725,13 @@ name="deadline"
 
 value={form.deadline}
 
-min="2026-01-01"
+min="2000-01-01"
 
-max="2026-12-31"
+max="2100-12-31"
 
-onChange={(e)=>{
-
-    const value = e.target.value;
-
-    if(value){
-
-        const year = value.split("-")[0];
-
-        if(year !== "2026"){
-
-            return;
-        }
-
-    }
-
-    handleChange(e);
-
-}}
+onChange={handleChange}
 
 />
-
-
 
 
 
