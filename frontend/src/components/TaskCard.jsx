@@ -9,8 +9,63 @@ function TaskCard({
     task,
     onEdit,
     onDelete,
-    onComplete
+    onChangeStatus
 }) {
+
+
+    const priorityLabels = {
+
+        HIGH: "Cao",
+
+        MEDIUM: "Trung bình",
+
+        LOW: "Thấp"
+
+    };
+
+
+
+    const statusLabels = {
+
+        TODO: "Chưa làm",
+
+        DOING: "Đang làm",
+
+        DONE: "Hoàn thành"
+
+    };
+
+
+
+    const nextStatus = {
+
+        TODO: "DOING",
+
+        DOING: "DONE",
+
+        DONE: "TODO"
+
+    };
+
+
+
+    const currentStatus = task.status || "TODO";
+
+
+
+    const handleStatusClick = ()=>{
+
+        onChangeStatus(
+
+            task,
+
+            nextStatus[currentStatus]
+
+        );
+
+    };
+
+
 
 
     return (
@@ -18,34 +73,25 @@ function TaskCard({
 <tr>
 
 
-<td className="text-center">
+{/* TÊN CÔNG VIỆC */}
 
-<input
+<td className="task-name-cell">
 
-type="checkbox"
-
-checked={task.status === "DONE"}
-
-onChange={() => onComplete(task)}
-
-/>
-
-</td>
-
-
-
-
-
-<td>
 
 <span
 
 className={
-task.status === "DONE"
+
+currentStatus === "DONE"
+
 ?
+
 "task-done"
+
 :
+
 ""
+
 }
 
 >
@@ -56,7 +102,10 @@ task.status === "DONE"
 
 
 
+
+
 {
+
 task.description &&
 
 
@@ -77,7 +126,11 @@ overlay={
 >
 
 
-<span className="description-icon">
+<span
+
+className="description-icon ms-2"
+
+>
 
 📝
 
@@ -89,7 +142,12 @@ overlay={
 }
 
 
+
 </td>
+
+
+
+
 
 
 
@@ -106,12 +164,7 @@ task.category
 
 ?
 
-<span>
-
-{task.category.name}
-
-</span>
-
+task.category.name
 
 :
 
@@ -131,56 +184,88 @@ Chưa có
 
 
 
-{/* STATUS */}
+
+
+
+
+
+{/* TRẠNG THÁI */}
 
 <td>
 
 
-{
+<OverlayTrigger
 
-task.status === "TODO"
+placement="top"
 
-&&
+overlay={
 
-<span className="status-badge todo">
+<Tooltip>
 
-TODO
+Bấm để đổi trạng thái
 
-</span>
+</Tooltip>
+
+}
+
+>
+
+
+<button
+
+type="button"
+
+aria-label="Đổi trạng thái công việc"
+
+className={
+
+`
+status-badge 
+cursor-pointer
+
+${
+currentStatus === "TODO"
+
+?
+
+"status-todo"
+
+:
+
+currentStatus === "DOING"
+
+?
+
+"status-doing"
+
+:
+
+"status-done"
+
+}
+
+`
 
 }
 
 
+onClick={handleStatusClick}
 
-{
-
-task.status === "DOING"
-
-&&
-
-<span className="status-badge doing">
-
-DOING
-
-</span>
-
-}
-
+>
 
 
 {
 
-task.status === "DONE"
-
-&&
-
-<span className="status-badge done">
-
-DONE
-
-</span>
+statusLabels[currentStatus]
 
 }
+
+
+</button>
+
+
+</OverlayTrigger>
+
 
 
 </td>
@@ -191,56 +276,50 @@ DONE
 
 
 
-{/* PRIORITY */}
+
+
+{/* MỨC ƯU TIÊN */}
 
 <td>
 
 
-{
+<span
 
-task.priority === "HIGH"
+className={
 
-&&
+`
+priority 
+${
+task.priority
 
-<span className="priority high">
+?
 
-HIGH
+task.priority.toLowerCase()
 
-</span>
+:
+
+"medium"
+
+}
+`
 
 }
 
-
-
-{
-
-task.priority === "MEDIUM"
-
-&&
-
-<span className="priority medium">
-
-MEDIUM
-
-</span>
-
-}
-
+>
 
 
 {
 
-task.priority === "LOW"
+priorityLabels[task.priority]
 
-&&
+||
 
-<span className="priority low">
-
-LOW
-
-</span>
+"Trung bình"
 
 }
+
+
+</span>
 
 
 </td>
@@ -251,7 +330,9 @@ LOW
 
 
 
-{/* DEADLINE */}
+
+
+{/* HẠN HOÀN THÀNH */}
 
 <td>
 
@@ -262,10 +343,14 @@ task.deadline
 
 ?
 
+
 new Date(task.deadline)
+
 .toLocaleDateString("vi-VN")
 
+
 :
+
 
 <span className="deadline-empty">
 
@@ -284,7 +369,9 @@ Chưa có
 
 
 
-{/* ACTION */}
+
+
+{/* THAO TÁC */}
 
 <td>
 

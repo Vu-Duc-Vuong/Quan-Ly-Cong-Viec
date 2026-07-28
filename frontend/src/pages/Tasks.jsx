@@ -4,8 +4,6 @@ import "../assets/task.css";
 import {
     getTasks,
     searchTasks,
-    getTodayTasks,
-    getOverdueTasks,
     createTask,
     updateTask,
     deleteTask
@@ -17,7 +15,6 @@ import {
 
 import TaskCard from "../components/TaskCard";
 
-
 import {
     Button,
     Form,
@@ -27,7 +24,6 @@ import {
 } from "react-bootstrap";
 
 
-
 function Tasks() {
 
 
@@ -35,26 +31,18 @@ function Tasks() {
 
     const [allTasks,setAllTasks] = useState([]);
 
-
     const [categories,setCategories] = useState([]);
 
-
     const [editId,setEditId] = useState(null);
-
 
     const [keyword,setKeyword] = useState("");
 
 
     const [statusFilter,setStatusFilter] = useState("ALL");
 
-
     const [priorityFilter,setPriorityFilter] = useState("ALL");
+
     const [categoryFilter,setCategoryFilter] = useState("ALL");
-
-    const selectAll = tasks.length > 0 &&
-    tasks.every(task => task.status === "DONE");
-
-
 
 
 
@@ -70,26 +58,69 @@ function Tasks() {
 
 
 
+    const convertStatus=(status)=>{
+
+        const data={
+
+            ALL:"Tất cả",
+            TODO:"Chưa làm",
+            DOING:"Đang làm",
+            DONE:"Hoàn thành"
+
+        };
 
 
-    const loadTasks = async()=>{
-
-        const response = await getTasks();
-
-        setTasks(response.data);
-
-        setAllTasks(response.data);
+        return data[status] || status;
 
     };
 
 
 
+    const convertPriority=(priority)=>{
 
-    const loadCategories = async()=>{
+        const data={
+
+            ALL:"Tất cả",
+            LOW:"Thấp",
+            MEDIUM:"Trung bình",
+            HIGH:"Cao"
+
+        };
+
+
+        return data[priority] || priority;
+
+    };
+
+
+
+    const loadTasks=async()=>{
 
         try{
 
-            const response = await getMember3Categories();
+            const response = await getTasks();
+
+            setTasks(response.data);
+
+            setAllTasks(response.data);
+
+        }
+        catch(error){
+
+            console.log(error);
+
+        }
+
+    };
+
+
+
+    const loadCategories=async()=>{
+
+        try{
+
+            const response =
+                await getMember3Categories();
 
             setCategories(response.data);
 
@@ -104,8 +135,6 @@ function Tasks() {
 
 
 
-
-
     useEffect(()=>{
 
         loadTasks();
@@ -113,9 +142,6 @@ function Tasks() {
         loadCategories();
 
     },[]);
-
-
-
 
 
 
@@ -131,10 +157,6 @@ function Tasks() {
         });
 
     };
-
-
-
-
 
 
 
@@ -159,6 +181,12 @@ function Tasks() {
 
 
 
+    const handleCancel=()=>{
+
+        resetForm();
+
+    };
+
 
 
 
@@ -176,33 +204,32 @@ function Tasks() {
         }
 
 
+        try{
+
+            if(editId){
+
+                await updateTask(editId,form);
+
+            }
+            else{
+
+                await createTask(form);
+
+            }
 
 
-        if(editId){
+            resetForm();
 
-            await updateTask(editId,form);
+            loadTasks();
 
         }
-        else{
+        catch(error){
 
-            await createTask(form);
+            console.log(error);
 
         }
-
-
-
-        resetForm();
-
-        loadTasks();
-
 
     };
-
-
-
-
-
-
 
 
 
@@ -210,7 +237,6 @@ function Tasks() {
 
 
         setEditId(task.id);
-
 
 
         setForm({
@@ -228,6 +254,7 @@ function Tasks() {
             :
             "",
 
+
             categoryId:
             task.category?.id || ""
 
@@ -238,17 +265,65 @@ function Tasks() {
 
 
 
+    const handleChangeStatus=async(task,status)=>{
+
+
+        await updateTask(
+
+            task.id,
+
+            {
+
+                title:task.title,
+
+                description:task.description || "",
+
+                priority:task.priority,
+
+                deadline:
+                task.deadline
+                ?
+                task.deadline.substring(0,10)
+                :
+                "",
+
+
+                status:status,
+
+
+                categoryId:
+                task.category?.id || ""
+
+            }
+
+        );
+
+
+        loadTasks();
+
+    };
 
 
 
+    const handleDelete=async(id)=>{
 
+        try{
 
+            await deleteTask(id);
 
-    const applyFilter=(data)=>{
+            loadTasks();
+
+        }
+        catch(error){
+
+            console.log(error);
+
+        }
+
+    };    const applyFilter=(data)=>{
 
 
         let result=[...data];
-
 
 
         if(statusFilter!=="ALL"){
@@ -260,9 +335,6 @@ function Tasks() {
         }
 
 
-
-
-
         if(priorityFilter!=="ALL"){
 
             result=result.filter(
@@ -272,38 +344,19 @@ function Tasks() {
         }
 
 
+        if(categoryFilter!=="ALL"){
 
-        setTasks(result);
-
-
-    };
-
-
-
-
-
-
-
-
-
-    const handleSearch=async()=>{
-
-
-        if(!keyword){
-
-            applyFilter(allTasks);
-
-            return;
+            result=result.filter(
+                task=>
+                String(task.category?.id)
+                ===
+                String(categoryFilter)
+            );
 
         }
 
 
-
-        const response = await searchTasks(keyword);
-
-
-        applyFilter(response.data);
-
+        setTasks(result);
 
     };
 
@@ -311,48 +364,17 @@ function Tasks() {
 
 
 
+    const filterData=(
+
+        data,
+        status=statusFilter,
+        priority=priorityFilter,
+        category=categoryFilter
+
+    )=>{
 
 
-
-
-    const handleToday=async()=>{
-
-        const response = await getTodayTasks();
-
-        setTasks(response.data);
-
-    };
-
-
-
-
-
-
-
-    const handleOverdue=async()=>{
-
-        const response = await getOverdueTasks();
-
-        setTasks(response.data);
-
-    };
-
-
-
-
-
-
-
-
-
-    const handleStatus=(status)=>{
-
-
-        setStatusFilter(status);
-
-
-        let result=[...allTasks];
-
+        let result=[...data];
 
 
         if(status!=="ALL"){
@@ -364,27 +386,54 @@ function Tasks() {
         }
 
 
-
-
-
-        if(priorityFilter!=="ALL"){
+        if(priority!=="ALL"){
 
             result=result.filter(
-                task=>task.priority===priorityFilter
+                task=>task.priority===priority
             );
 
         }
 
 
+        if(category!=="ALL"){
 
-        setTasks(result);
+            result=result.filter(
 
+                task=>
+                String(task.category?.id)
+                ===
+                String(category)
+
+            );
+
+        }
+
+
+        return result;
 
     };
 
 
 
 
+    const handleStatus=(status)=>{
+
+
+        setStatusFilter(status);
+
+
+        setTasks(
+
+            filterData(
+                allTasks,
+                status,
+                priorityFilter,
+                categoryFilter
+            )
+
+        );
+
+    };
 
 
 
@@ -396,34 +445,82 @@ function Tasks() {
         setPriorityFilter(priority);
 
 
+        setTasks(
 
-        let result=[...allTasks];
+            filterData(
+                allTasks,
+                statusFilter,
+                priority,
+                categoryFilter
+            )
+
+        );
+
+    };
 
 
 
-        if(statusFilter!=="ALL"){
 
-            result=result.filter(
-                task=>task.status===statusFilter
+
+    const handleCategory=(category)=>{
+
+
+        setCategoryFilter(category);
+
+
+        setTasks(
+
+            filterData(
+                allTasks,
+                statusFilter,
+                priorityFilter,
+                category
+            )
+
+        );
+
+    };
+
+
+
+
+
+    const handleSearch=async()=>{
+
+
+        if(!keyword.trim()){
+
+            setTasks(
+                filterData(allTasks)
             );
+
+            return;
 
         }
 
 
 
+        try{
 
 
-        if(priority!=="ALL"){
+            const response =
+                await searchTasks(keyword);
 
-            result=result.filter(
-                task=>task.priority===priority
+
+
+            setTasks(
+
+                filterData(response.data)
+
             );
 
+
         }
+        catch(error){
 
+            console.log(error);
 
-
-        setTasks(result);
+        }
 
 
     };
@@ -432,14 +529,16 @@ function Tasks() {
 
 
 
-
-
-
     const resetFilter=()=>{
+
 
         setStatusFilter("ALL");
 
         setPriorityFilter("ALL");
+
+        setCategoryFilter("ALL");
+
+        setKeyword("");
 
         loadTasks();
 
@@ -449,153 +548,22 @@ function Tasks() {
 
 
 
+    return (
 
-
-
-
-    const handleComplete = async(task)=>{
-
-
-    const newStatus = 
-        task.status === "DONE"
-        ?
-        "TODO"
-        :
-        "DONE";
-
-
-
-    await updateTask(
-
-        task.id,
-
-        {
-
-            title: task.title,
-
-            description: task.description || "",
-
-            priority: task.priority,
-
-            deadline:
-            task.deadline
-            ?
-            task.deadline.substring(0,10)
-            :
-            "",
-
-            status:newStatus,
-
-            categoryId:
-            task.category?.id || ""
-
-        }
-
-    );
-
-
-    loadTasks();
-
-
-};
-
-
-
-
-
-
-
-
-const handleSelectAll = async()=>{
-
-
-    const newStatus = selectAll
-        ?
-        "TODO"
-        :
-        "DONE";
-
-
-
-    await Promise.all(
-
-        tasks.map(task=>
-
-            updateTask(
-
-                task.id,
-
-                {
-
-                    title: task.title,
-
-                    description: task.description || "",
-
-                    priority: task.priority,
-
-                    deadline:
-                    task.deadline
-                    ?
-                    task.deadline.substring(0,10)
-                    :
-                    "",
-
-                    status:newStatus,
-
-                    categoryId:
-                    task.category?.id || ""
-
-                }
-
-            )
-
-        )
-
-    );
-
-
-    loadTasks();
-
-
-};
-
-
-
-
-
-
-
-
-const handleDelete=async(id)=>{
-
-    await deleteTask(id);
-
-    loadTasks();
-
-};
-
-
-
-
-
-
-
-return (
 
 <div className="task-page">
 
 
 <h2 className="mb-4">
+
 Quản lý công việc
+
 </h2>
 
 
 
 
-
 <Row className="g-4">
-
-
 
 
 
@@ -623,9 +591,6 @@ editId
 
 
 
-
-
-
 <Form onSubmit={handleSubmit}>
 
 
@@ -642,7 +607,6 @@ value={form.title}
 onChange={handleChange}
 
 />
-
 
 
 
@@ -664,9 +628,6 @@ onChange={handleChange}
 
 
 
-
-
-
 <Form.Select
 
 className="mb-3"
@@ -681,22 +642,27 @@ onChange={handleChange}
 
 
 <option value="LOW">
-LOW
+
+Thấp
+
 </option>
 
 
 <option value="MEDIUM">
-MEDIUM
+
+Trung bình
+
 </option>
 
 
 <option value="HIGH">
-HIGH
+
+Cao
+
 </option>
 
 
 </Form.Select>
-
 
 
 
@@ -716,13 +682,17 @@ onChange={handleChange}
 
 
 <option value="">
+
 -- Chọn danh mục --
+
 </option>
+
 
 
 {
 
 categories.map(category=>(
+
 
 <option
 
@@ -736,13 +706,13 @@ value={category.id}
 
 </option>
 
+
 ))
 
 }
 
 
 </Form.Select>
-
 
 
 
@@ -761,7 +731,6 @@ value={form.deadline}
 onChange={handleChange}
 
 />
-
 
 
 
@@ -788,16 +757,14 @@ editId
 
 }
 
-
 </Button>
-
-
 
 
 
 {
 
 editId &&
+
 
 <Button
 
@@ -813,18 +780,14 @@ Hủy
 
 </Button>
 
+
 }
 
 
 </div>
 
 
-
-
-
-
 </Form>
-
 
 
 </Card.Body>
@@ -834,7 +797,6 @@ Hủy
 
 
 </Col>
-
 
 
 
@@ -850,11 +812,15 @@ Hủy
 
 
 <h5>
+
 Tìm kiếm và lọc
+
 </h5>
 
 
-<div className="search-box">
+
+
+<div className="search-box mb-3">
 
 
 <Form.Control
@@ -870,7 +836,11 @@ e=>setKeyword(e.target.value)
 />
 
 
-<Button onClick={handleSearch}>
+<Button
+
+onClick={handleSearch}
+
+>
 
 Tìm
 
@@ -883,16 +853,26 @@ Tìm
 
 
 
-
-
 <div className="filter-line">
 
 
-<strong>Status:</strong>
+<strong>
+
+Trạng thái:
+
+</strong>
+
+
+
+<div className="filter-buttons">
 
 
 {
-["ALL","TODO","DOING","DONE"].map(status=>(
+
+["ALL","TODO","DOING","DONE"]
+
+.map(status=>(
+
 
 <Button
 
@@ -912,14 +892,20 @@ onClick={()=>handleStatus(status)}
 
 >
 
-{status}
+
+{convertStatus(status)}
+
 
 </Button>
 
 
 ))
 
+
 }
+
+
+</div>
 
 
 </div>
@@ -928,16 +914,25 @@ onClick={()=>handleStatus(status)}
 
 
 
-
-
 <div className="filter-line">
 
 
-<strong>Priority:</strong>
+<strong>
+
+Mức ưu tiên:
+
+</strong>
+
+
+<div className="filter-buttons">
 
 
 {
-["ALL","LOW","MEDIUM","HIGH"].map(priority=>(
+
+["ALL","LOW","MEDIUM","HIGH"]
+
+.map(priority=>(
+
 
 <Button
 
@@ -957,14 +952,87 @@ onClick={()=>handlePriority(priority)}
 
 >
 
-{priority}
+
+{convertPriority(priority)}
+
 
 </Button>
 
 
 ))
 
+
 }
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div className="filter-line">
+
+
+<strong>
+
+Danh mục:
+
+</strong>
+
+
+
+<Form.Select
+
+className="category-filter"
+
+size="sm"
+
+value={categoryFilter}
+
+onChange={
+e=>handleCategory(e.target.value)
+}
+
+>
+
+
+<option value="ALL">
+
+Tất cả
+
+</option>
+
+
+
+{
+
+categories.map(category=>(
+
+
+<option
+
+key={category.id}
+
+value={category.id}
+
+>
+
+{category.name}
+
+</option>
+
+
+))
+
+}
+
+
+</Form.Select>
+
 
 
 
@@ -978,7 +1046,7 @@ onClick={resetFilter}
 
 >
 
-Reset
+Đặt lại
 
 </Button>
 
@@ -996,8 +1064,6 @@ Reset
 
 
 
-
-
 <Card className="shadow-sm task-table-card">
 
 
@@ -1005,31 +1071,34 @@ Reset
 
 
 <h5>
+
 Danh sách công việc
+
 </h5>
 
 
 
 
+<div className="table-responsive">
 
-<table className="table table-hover align-middle">
+
+<table className="table table-hover align-middle task-table">
 
 
 <thead>
 
-<tr>
 
-<th></th>
+<tr>
 
 <th>Tên</th>
 
 <th>Danh mục</th>
 
-<th>Status</th>
+<th>Trạng thái</th>
 
-<th>Priority</th>
+<th>Mức ưu tiên</th>
 
-<th>Deadline</th>
+<th>Hạn hoàn thành</th>
 
 <th>Thao tác</th>
 
@@ -1041,7 +1110,6 @@ Danh sách công việc
 
 
 
-
 <tbody>
 
 
@@ -1049,12 +1117,18 @@ Danh sách công việc
 
 tasks.length===0
 
+
 ?
 
 <tr>
 
-<td colSpan="7"
-className="text-center text-muted">
+<td
+
+colSpan="6"
+
+className="text-center text-muted"
+
+>
 
 Không có công việc
 
@@ -1065,6 +1139,7 @@ Không có công việc
 
 :
 
+
 tasks.map(task=>(
 
 
@@ -1074,7 +1149,7 @@ key={task.id}
 
 task={task}
 
-onComplete={handleComplete}
+onChangeStatus={handleChangeStatus}
 
 onEdit={handleEdit}
 
@@ -1089,11 +1164,13 @@ onDelete={handleDelete}
 }
 
 
-
 </tbody>
 
 
 </table>
+
+
+</div>
 
 
 

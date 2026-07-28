@@ -44,6 +44,7 @@ function Dashboard() {
 
 
 
+
     const total = tasks.length;
 
 
@@ -94,6 +95,57 @@ function Dashboard() {
 
 
 
+    const convertStatus=(status)=>{
+
+        switch(status){
+
+            case "TODO":
+                return "Chưa làm";
+
+            case "DOING":
+                return "Đang làm";
+
+            case "DONE":
+                return "Hoàn thành";
+
+            default:
+                return status;
+
+        }
+
+    };
+
+
+
+
+
+    const convertPriority=(priority)=>{
+
+        switch(priority){
+
+            case "HIGH":
+                return "Cao";
+
+            case "MEDIUM":
+                return "Trung bình";
+
+            case "LOW":
+                return "Thấp";
+
+            default:
+                return priority;
+
+        }
+
+    };
+
+
+
+
+
+
+
+
 
     const cards = [
 
@@ -136,6 +188,9 @@ function Dashboard() {
 
 
 
+
+
+
     return (
 
         <div>
@@ -153,6 +208,8 @@ function Dashboard() {
                 Tổng quan công việc
 
             </p>
+
+
 
 
 
@@ -210,6 +267,10 @@ function Dashboard() {
 
 
 
+
+
+
+
             <div className="card border-0 shadow-sm p-3">
 
 
@@ -218,6 +279,10 @@ function Dashboard() {
                     Danh sách công việc gần đây
 
                 </h4>
+
+
+
+
 
 
 
@@ -241,14 +306,14 @@ function Dashboard() {
 
                             <th>
 
-                                Status
+                                Trạng thái
 
                             </th>
 
 
                             <th>
 
-                                Priority
+                                Ưu tiên
 
                             </th>
 
@@ -264,6 +329,8 @@ function Dashboard() {
 
 
                     </thead>
+
+
 
 
 
@@ -289,19 +356,25 @@ function Dashboard() {
 
 
 
+
+
                                     <td>
 
-                                        {task.status}
+                                        {convertStatus(task.status)}
 
                                     </td>
 
 
 
+
+
                                     <td>
 
-                                        {task.priority}
+                                        {convertPriority(task.priority)}
 
                                     </td>
+
+
 
 
 
@@ -315,11 +388,11 @@ function Dashboard() {
                                             ?
 
                                             new Date(task.deadline)
-                                            .toLocaleDateString()
+                                            .toLocaleDateString("vi-VN")
 
                                             :
 
-                                            ""
+                                            "Chưa có"
 
                                         }
 
