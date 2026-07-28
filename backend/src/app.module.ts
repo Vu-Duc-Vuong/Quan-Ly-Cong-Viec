@@ -6,6 +6,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from "./mail/mail.module";
+import { Member3Module } from './member3/member3.module';
 
 @Module({
 
@@ -48,7 +49,9 @@ UsersModule,
 
 MailModule,
 
-AuthModule
+AuthModule,
+
+Member3Module
 
 ],
 
