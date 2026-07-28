@@ -1,5 +1,3 @@
-function Statistics() {
-  return <h2>Trang Thống kê</h2>;
-}
+import Member3StatisticsPage from '../member3/pages/Member3StatisticsPage';
 
-export default Statistics;
+export default Member3StatisticsPage;

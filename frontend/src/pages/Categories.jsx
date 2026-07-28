@@ -1,5 +1,3 @@
-function Categories() {
-  return <h2>Trang Danh mục</h2>;
-}
+import Member3CategoriesPage from '../member3/pages/Member3CategoriesPage';
 
-export default Categories;
+export default Member3CategoriesPage;

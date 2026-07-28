@@ -1,5 +1,3 @@
-function Calendar() {
-  return <h2>Trang Lịch làm việc</h2>;
-}
+import Member3CalendarPage from '../member3/pages/Member3CalendarPage';
 
-export default Calendar;
+export default Member3CalendarPage;
