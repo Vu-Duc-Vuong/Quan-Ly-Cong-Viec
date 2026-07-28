@@ -20,7 +20,6 @@ function TaskCard({
 
 <td className="text-center">
 
-
 <input
 
 type="checkbox"
@@ -31,16 +30,13 @@ onChange={() => onComplete(task)}
 
 />
 
-
 </td>
 
 
 
 
 
-
 <td>
-
 
 <span
 
@@ -56,10 +52,7 @@ task.status === "DONE"
 
 {task.title}
 
-
 </span>
-
-
 
 
 
@@ -84,11 +77,7 @@ overlay={
 >
 
 
-<span
-
-className="description-icon"
-
->
+<span className="description-icon">
 
 📝
 
@@ -97,9 +86,42 @@ className="description-icon"
 
 </OverlayTrigger>
 
-
 }
 
+
+</td>
+
+
+
+
+
+{/* DANH MỤC */}
+
+<td>
+
+
+{
+
+task.category
+
+?
+
+<span>
+
+{task.category.name}
+
+</span>
+
+
+:
+
+<span className="text-muted">
+
+Chưa có
+
+</span>
+
+}
 
 
 </td>
@@ -109,8 +131,7 @@ className="description-icon"
 
 
 
-
-
+{/* STATUS */}
 
 <td>
 
@@ -131,7 +152,6 @@ TODO
 
 
 
-
 {
 
 task.status === "DOING"
@@ -145,7 +165,6 @@ DOING
 </span>
 
 }
-
 
 
 
@@ -164,7 +183,6 @@ DONE
 }
 
 
-
 </td>
 
 
@@ -173,7 +191,7 @@ DONE
 
 
 
-
+{/* PRIORITY */}
 
 <td>
 
@@ -194,7 +212,6 @@ HIGH
 
 
 
-
 {
 
 task.priority === "MEDIUM"
@@ -208,7 +225,6 @@ MEDIUM
 </span>
 
 }
-
 
 
 
@@ -227,7 +243,6 @@ LOW
 }
 
 
-
 </td>
 
 
@@ -236,7 +251,7 @@ LOW
 
 
 
-
+{/* DEADLINE */}
 
 <td>
 
@@ -248,7 +263,7 @@ task.deadline
 ?
 
 new Date(task.deadline)
-.toLocaleDateString()
+.toLocaleDateString("vi-VN")
 
 :
 
@@ -261,7 +276,6 @@ Chưa có
 }
 
 
-
 </td>
 
 
@@ -270,15 +284,12 @@ Chưa có
 
 
 
-
+{/* ACTION */}
 
 <td>
 
 
 <div className="task-actions">
-
-
-
 
 
 <Button
@@ -299,9 +310,6 @@ Sửa
 
 
 
-
-
-
 <Button
 
 size="sm"
@@ -317,17 +325,10 @@ Xóa
 </Button>
 
 
-
-
-
-
 </div>
 
 
 </td>
-
-
-
 
 
 

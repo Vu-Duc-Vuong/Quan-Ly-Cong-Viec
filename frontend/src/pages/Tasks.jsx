@@ -11,6 +11,10 @@ import {
     deleteTask
 } from "../services/taskService";
 
+import {
+    getMember3Categories
+} from "../member3/services/member3Service";
+
 import TaskCard from "../components/TaskCard";
 
 
@@ -32,6 +36,9 @@ function Tasks() {
     const [allTasks,setAllTasks] = useState([]);
 
 
+    const [categories,setCategories] = useState([]);
+
+
     const [editId,setEditId] = useState(null);
 
 
@@ -42,10 +49,11 @@ function Tasks() {
 
 
     const [priorityFilter,setPriorityFilter] = useState("ALL");
-
+    const [categoryFilter,setCategoryFilter] = useState("ALL");
 
     const selectAll = tasks.length > 0 &&
     tasks.every(task => task.status === "DONE");
+
 
 
 
@@ -55,10 +63,10 @@ function Tasks() {
         title:"",
         description:"",
         priority:"MEDIUM",
-        deadline:""
+        deadline:"",
+        categoryId:""
 
     });
-
 
 
 
@@ -77,13 +85,34 @@ function Tasks() {
 
 
 
+    const loadCategories = async()=>{
+
+        try{
+
+            const response = await getMember3Categories();
+
+            setCategories(response.data);
+
+        }
+        catch(error){
+
+            console.log(error);
+
+        }
+
+    };
+
+
+
+
 
     useEffect(()=>{
 
         loadTasks();
 
-    },[]);
+        loadCategories();
 
+    },[]);
 
 
 
@@ -110,7 +139,6 @@ function Tasks() {
 
 
 
-
     const resetForm=()=>{
 
         setForm({
@@ -118,7 +146,8 @@ function Tasks() {
             title:"",
             description:"",
             priority:"MEDIUM",
-            deadline:""
+            deadline:"",
+            categoryId:""
 
         });
 
@@ -133,24 +162,9 @@ function Tasks() {
 
 
 
-    const handleCancel=()=>{
-
-        resetForm();
-
-    };
-
-
-
-
-
-
-
-
-
     const handleSubmit=async(e)=>{
 
         e.preventDefault();
-
 
 
         if(!form.title.trim()){
@@ -160,7 +174,6 @@ function Tasks() {
             return;
 
         }
-
 
 
 
@@ -213,7 +226,10 @@ function Tasks() {
             ?
             task.deadline.substring(0,10)
             :
-            ""
+            "",
+
+            categoryId:
+            task.category?.id || ""
 
         });
 
@@ -254,7 +270,6 @@ function Tasks() {
             );
 
         }
-
 
 
 
@@ -307,7 +322,6 @@ function Tasks() {
         setTasks(response.data);
 
     };
-
 
 
 
@@ -450,18 +464,33 @@ function Tasks() {
         "DONE";
 
 
+
     await updateTask(
+
         task.id,
+
         {
+
             title: task.title,
+
             description: task.description || "",
+
             priority: task.priority,
-            deadline: task.deadline
-            ? task.deadline.substring(0,10)
+
+            deadline:
+            task.deadline
+            ?
+            task.deadline.substring(0,10)
             :
             "",
-            status:newStatus
+
+            status:newStatus,
+
+            categoryId:
+            task.category?.id || ""
+
         }
+
     );
 
 
@@ -469,6 +498,14 @@ function Tasks() {
 
 
 };
+
+
+
+
+
+
+
+
 const handleSelectAll = async()=>{
 
 
@@ -489,15 +526,25 @@ const handleSelectAll = async()=>{
                 task.id,
 
                 {
+
                     title: task.title,
+
                     description: task.description || "",
+
                     priority: task.priority,
-                    deadline: task.deadline
+
+                    deadline:
+                    task.deadline
                     ?
                     task.deadline.substring(0,10)
                     :
                     "",
-                    status:newStatus
+
+                    status:newStatus,
+
+                    categoryId:
+                    task.category?.id || ""
+
                 }
 
             )
@@ -518,13 +565,19 @@ const handleSelectAll = async()=>{
 
 
 
-    const handleDelete=async(id)=>{
 
-        await deleteTask(id);
+const handleDelete=async(id)=>{
 
-        loadTasks();
+    await deleteTask(id);
 
-    };
+    loadTasks();
+
+};
+
+
+
+
+
 
 
 return (
@@ -540,16 +593,11 @@ Quản lý công việc
 
 
 
-
 <Row className="g-4">
 
 
 
 
-
-
-
-{/* FORM */}
 
 <Col md={4}>
 
@@ -617,6 +665,8 @@ onChange={handleChange}
 
 
 
+
+
 <Form.Select
 
 className="mb-3"
@@ -643,6 +693,52 @@ MEDIUM
 <option value="HIGH">
 HIGH
 </option>
+
+
+</Form.Select>
+
+
+
+
+
+
+<Form.Select
+
+className="mb-3"
+
+name="categoryId"
+
+value={form.categoryId}
+
+onChange={handleChange}
+
+>
+
+
+<option value="">
+-- Chọn danh mục --
+</option>
+
+
+{
+
+categories.map(category=>(
+
+<option
+
+key={category.id}
+
+value={category.id}
+
+>
+
+{category.name}
+
+</option>
+
+))
+
+}
 
 
 </Form.Select>
@@ -682,8 +778,8 @@ type="submit"
 
 >
 
-
 {
+
 editId
 ?
 "Lưu thay đổi"
@@ -698,18 +794,16 @@ editId
 
 
 
+
 {
 
 editId &&
-
 
 <Button
 
 variant="outline-secondary"
 
 type="button"
-
-className="flex-fill"
 
 onClick={handleCancel}
 
@@ -719,9 +813,7 @@ Hủy
 
 </Button>
 
-
 }
-
 
 
 </div>
@@ -748,11 +840,6 @@ Hủy
 
 
 
-
-
-
-{/* LIST */}
-
 <Col md={8}>
 
 
@@ -765,10 +852,6 @@ Hủy
 <h5>
 Tìm kiếm và lọc
 </h5>
-
-
-
-
 
 
 <div className="search-box">
@@ -787,14 +870,11 @@ e=>setKeyword(e.target.value)
 />
 
 
-
-
 <Button onClick={handleSearch}>
 
 Tìm
 
 </Button>
-
 
 
 </div>
@@ -808,15 +888,11 @@ Tìm
 <div className="filter-line">
 
 
-<strong>
-Status:
-</strong>
-
+<strong>Status:</strong>
 
 
 {
 ["ALL","TODO","DOING","DONE"].map(status=>(
-
 
 <Button
 
@@ -846,9 +922,7 @@ onClick={()=>handleStatus(status)}
 }
 
 
-
 </div>
-
 
 
 
@@ -859,16 +933,11 @@ onClick={()=>handleStatus(status)}
 <div className="filter-line">
 
 
-<strong>
-Priority:
-</strong>
-
-
+<strong>Priority:</strong>
 
 
 {
 ["ALL","LOW","MEDIUM","HIGH"].map(priority=>(
-
 
 <Button
 
@@ -899,9 +968,6 @@ onClick={()=>handlePriority(priority)}
 
 
 
-
-
-
 <Button
 
 size="sm"
@@ -917,10 +983,7 @@ Reset
 </Button>
 
 
-
 </div>
-
-
 
 
 
@@ -928,8 +991,6 @@ Reset
 
 
 </Card>
-
-
 
 
 
@@ -954,63 +1015,28 @@ Danh sách công việc
 <table className="table table-hover align-middle">
 
 
-
 <thead>
-
 
 <tr>
 
+<th></th>
 
-<th className="text-center">
+<th>Tên</th>
 
+<th>Danh mục</th>
 
-<input
+<th>Status</th>
 
-type="checkbox"
+<th>Priority</th>
 
-checked={selectAll}
+<th>Deadline</th>
 
-onChange={handleSelectAll}
-
-title="Đánh dấu tất cả công việc"
-
- />
-
-
-</th>
-
-
-
-<th>
-Tên
-</th>
-
-
-<th>
-Status
-</th>
-
-
-<th>
-Priority
-</th>
-
-
-<th>
-Deadline
-</th>
-
-
-<th>
-Thao tác
-</th>
-
+<th>Thao tác</th>
 
 </tr>
 
 
 </thead>
-
 
 
 
@@ -1027,8 +1053,7 @@ tasks.length===0
 
 <tr>
 
-<td colSpan="6"
-
+<td colSpan="7"
 className="text-center text-muted">
 
 Không có công việc
@@ -1038,9 +1063,7 @@ Không có công việc
 </tr>
 
 
-
 :
-
 
 tasks.map(task=>(
 
@@ -1071,8 +1094,6 @@ onDelete={handleDelete}
 
 
 </table>
-
-
 
 
 
