@@ -1,4 +1,3 @@
-import { Container, Row, Col } from "react-bootstrap";
 import { Outlet } from "react-router-dom";
 
 import Sidebar from "../components/Sidebar";
@@ -10,47 +9,56 @@ function MainLayout() {
 
     return (
 
-        <Container fluid className="p-0">
+        <div className="app-layout">
 
 
-            <Row className="g-0">
+            {/* SIDEBAR CỐ ĐỊNH */}
 
+            <aside className="sidebar-fixed">
 
-                <Col md={2}>
+                <Sidebar />
 
-                    <Sidebar />
-
-                </Col>
-
-
+            </aside>
 
 
 
-                <Col md={10}>
 
 
-            <div className="sticky-top">
+            {/* KHU VỰC BÊN PHẢI */}
 
-              <Header />
+            <div className="content-area">
+
+
+
+                {/* HEADER CỐ ĐỊNH */}
+
+                <header className="header-fixed">
+
+                    <Header />
+
+                </header>
+
+
+
+
+
+                {/* CHỈ CONTENT NÀY CUỘN */}
+
+                <main className="main-scroll">
+
+
+                    <Outlet />
+
+
+                </main>
+
+
 
             </div>
 
 
-                    <div className="main-content">
 
-                        <Outlet />
-
-                    </div>
-
-
-                </Col>
-
-
-
-            </Row>
-
-
-        </Container>
+        </div>
 
     );
 

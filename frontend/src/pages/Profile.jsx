@@ -164,7 +164,7 @@ function Profile() {
           <img
             src={
               user.avatar ||
-              "https://i.pravatar.cc/150"
+              "http://localhost:3000/images/anh.png"
             }
             alt="Avatar"
             width="140"
@@ -326,14 +326,6 @@ function Profile() {
 
         </button>
 
-        <button
-          className="btn btn-danger w-100"
-          onClick={dangXuat}
-        >
-
-          Đăng xuất
-
-        </button>
 
       </div>
 

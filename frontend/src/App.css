@@ -182,3 +182,97 @@
     border-right-color: var(--border);
   }
 }
+/* ============================= */
+/* FIXED SIDEBAR + HEADER */
+/* ============================= */
+
+
+html,
+body,
+#root {
+
+    height:100%;
+    margin:0;
+    overflow:hidden;
+
+}
+
+
+
+.app-layout {
+
+    display:flex;
+
+    height:100vh;
+
+    width:100%;
+
+}
+
+
+
+.sidebar-fixed {
+
+    width:16.666%;
+
+    height:100vh;
+
+    position:fixed;
+
+    left:0;
+
+    top:0;
+
+    overflow-y:auto;
+
+    background:white;
+
+    z-index:1000;
+
+}
+
+
+
+.content-area {
+
+    margin-left:16.666%;
+
+    width:83.334%;
+
+    height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+
+.header-fixed {
+
+    height:70px;
+
+    position:sticky;
+
+    top:0;
+
+    background:white;
+
+    z-index:999;
+
+}
+
+
+
+.main-scroll {
+
+    flex:1;
+
+    overflow-y:auto;
+
+    padding:20px;
+
+    background:#f8f9fa;
+
+}

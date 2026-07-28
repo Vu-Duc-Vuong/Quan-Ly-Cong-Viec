@@ -728,7 +728,28 @@ name="deadline"
 
 value={form.deadline}
 
-onChange={handleChange}
+min="2026-01-01"
+
+max="2026-12-31"
+
+onChange={(e)=>{
+
+    const value = e.target.value;
+
+    if(value){
+
+        const year = value.split("-")[0];
+
+        if(year !== "2026"){
+
+            return;
+        }
+
+    }
+
+    handleChange(e);
+
+}}
 
 />
 
