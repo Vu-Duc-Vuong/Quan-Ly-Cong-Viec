@@ -13,6 +13,7 @@ export class UpdateTaskDto {
 
     deadline?: Date;
 
+    // ID danh mục gán cho task
     categoryId?: number;
 
 }

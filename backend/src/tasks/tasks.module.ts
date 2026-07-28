@@ -32,6 +32,11 @@ import { TasksService } from './tasks.service';
   ],
 
 
+  exports:[
+    TasksService,
+  ],
+
 })
+
 
 export class TasksModule {}
