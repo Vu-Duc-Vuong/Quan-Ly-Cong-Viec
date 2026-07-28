@@ -1,12 +1,31 @@
 import api from "./api";
 
-export const login = (data) => {
-  return api.post("/auth/login", data);
+
+export const login = async (data) => {
+
+  const response = await api.post("/auth/login", data);
+
+
+  const token = response.data.access_token;
+
+
+  if (token) {
+    localStorage.setItem(
+      "access_token",
+      token
+    );
+  }
+
+
+  return response;
+
 };
+
 
 export const register = (data) => {
   return api.post("/auth/register", data);
 };
+
 
 export const getProfile = (token) => {
   return api.get("/auth/profile", {
@@ -16,6 +35,7 @@ export const getProfile = (token) => {
   });
 };
 
+
 export const updateProfile = (token, data) => {
   return api.put("/users/profile", data, {
     headers: {
@@ -23,6 +43,7 @@ export const updateProfile = (token, data) => {
     },
   });
 };
+
 
 export const changePassword = (token, data) => {
   return api.put("/users/change-password", data, {
@@ -32,9 +53,11 @@ export const changePassword = (token, data) => {
   });
 };
 
+
 export const forgotPassword = (data) => {
   return api.post("/auth/forgot-password", data);
 };
+
 
 export const resetPassword = (data) => {
   return api.post("/auth/reset-password", data);

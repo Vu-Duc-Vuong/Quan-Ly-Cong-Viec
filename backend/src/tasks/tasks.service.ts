@@ -2,15 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 
-
 import { Task, TaskStatus } from './entities/task.entity';
 import { User } from '../users/user.entity';
+import { Category } from '../member3/entities/category.entity';
+
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { UpdatePriorityDto } from './dto/update-priority.dto';
-
 
 
 @Injectable()
@@ -20,15 +19,15 @@ export class TasksService {
 constructor(
 
   @InjectRepository(Task)
-
   private taskRepository: Repository<Task>,
 
   @InjectRepository(User)
-
   private userRepository: Repository<User>,
 
-) {}
+  @InjectRepository(Category)
+  private categoryRepository: Repository<Category>,
 
+) {}
 
 
 
@@ -36,27 +35,54 @@ constructor(
 // CREATE
 
 async create(
+  userId:number,
+  createTaskDto:CreateTaskDto,
+){
 
-  userId: number,
+  const user = await this.userRepository.findOneBy({
+    id:userId
+  });
 
-  createTaskDto: CreateTaskDto,
 
-) {
+  if(!user){
+    throw new Error("User not found");
+  }
 
-const user = await this.userRepository.findOneBy({
-  id: userId,
-});
 
-if (!user) {
-  throw new Error('User not found');
-}
+let category: Category | null = null;
 
-const task = this.taskRepository.create({
-  ...createTaskDto,
-  user,
-});
 
-return this.taskRepository.save(task);
+  if(createTaskDto.categoryId){
+
+    category =
+      await this.categoryRepository.findOneBy({
+        id:createTaskDto.categoryId
+      });
+
+  }
+
+
+
+  const task = this.taskRepository.create({
+
+    title:createTaskDto.title,
+
+    description:createTaskDto.description,
+
+    status:createTaskDto.status,
+
+    priority:createTaskDto.priority,
+
+    deadline:createTaskDto.deadline,
+
+    user,
+
+    category,
+
+  });
+
+
+  return this.taskRepository.save(task);
 
 }
 
@@ -68,19 +94,21 @@ return this.taskRepository.save(task);
 
 // READ ALL
 
-async findAll(userId: number) {
+async findAll(userId:number){
 
   return this.taskRepository.find({
 
-    where: {
+    where:{
 
-      user: {
-
-        id: userId,
-
-      },
+      user:{
+        id:userId
+      }
 
     },
+
+    relations:{
+      category:true
+    }
 
   });
 
@@ -95,34 +123,31 @@ async findAll(userId: number) {
 // READ ONE
 
 async findOne(
+  id:number,
+  userId:number,
+){
 
-  id: number,
+ return this.taskRepository.findOne({
 
-  userId: number,
+   where:{
 
-) {
+    id,
 
-  return this.taskRepository.findOne({
+    user:{
+      id:userId
+    }
 
-    where: {
+   },
 
-      id,
+   relations:{
 
-      user: {
+    user:true,
 
-        id: userId,
+    category:true
 
-      },
+   }
 
-    },
-
-    relations: {
-
-      user: true,
-
-    },
-
-  });
+ });
 
 }
 
@@ -135,54 +160,69 @@ async findOne(
 // UPDATE
 
 async update(
+ id:number,
+ userId:number,
+ updateTaskDto:UpdateTaskDto,
+){
 
-  id: number,
+ const task =
+ await this.taskRepository.findOne({
 
-  userId: number,
+  where:{
 
-  updateTaskDto: UpdateTaskDto,
+    id,
 
-) {
-
-  const task = await this.taskRepository.findOne({
-
-    where: {
-
-      id,
-
-      user: {
-
-        id: userId,
-
-      },
-
-    },
-
-  });
-
-  if (!task) {
-
-    throw new Error('Task not found');
+    user:{
+      id:userId
+    }
 
   }
 
-  await this.taskRepository.update(
+ });
 
-    id,
 
-    updateTaskDto,
+ if(!task){
 
-  );
+  throw new Error("Task not found");
 
-  return this.findOne(
+ }
 
-    id,
 
-    userId,
 
-  );
+ const updateData:any = {
+   ...updateTaskDto
+ };
+
+
+
+ if(updateTaskDto.categoryId){
+
+   const category =
+   await this.categoryRepository.findOneBy({
+
+     id:updateTaskDto.categoryId
+
+   });
+
+
+   updateData.category = category;
+
+   delete updateData.categoryId;
+
+ }
+
+
+
+ await this.taskRepository.update(
+   id,
+   updateData
+ );
+
+
+ return this.findOne(id,userId);
 
 }
+
 
 
 
@@ -193,15 +233,20 @@ async update(
 // DELETE
 
 async remove(
-  id: number,
-  userId: number,
-) {
-  return this.taskRepository.delete({
-    id,
-    user: {
-      id: userId,
-    },
-  });
+ id:number,
+ userId:number
+){
+
+ return this.taskRepository.delete({
+
+  id,
+
+  user:{
+    id:userId
+  }
+
+ });
+
 }
 
 
@@ -212,41 +257,45 @@ async remove(
 
 
 
-// ĐỔI TRẠNG THÁI
+// UPDATE STATUS
 
 async updateStatus(
-  id: number,
-  userId: number,
-  updateStatusDto: UpdateStatusDto,
-) {
+ id:number,
+ userId:number,
+ updateStatusDto:UpdateStatusDto
+){
 
-  const task = await this.taskRepository.findOne({
+ const task =
+ await this.taskRepository.findOne({
 
-    where: {
+  where:{
 
-      id,
+   id,
 
-      user: {
-
-        id: userId,
-
-      },
-
-    },
-
-  });
-
-  if (!task) {
-
-    throw new Error('Task not found');
+   user:{
+    id:userId
+   }
 
   }
 
-  task.status = updateStatusDto.status;
+ });
 
-  await this.taskRepository.save(task);
 
-  return this.findOne(id, userId);
+ if(!task){
+
+  throw new Error("Task not found");
+
+ }
+
+
+ task.status =
+ updateStatusDto.status;
+
+
+ await this.taskRepository.save(task);
+
+
+ return this.findOne(id,userId);
 
 }
 
@@ -258,41 +307,46 @@ async updateStatus(
 
 
 
-// ĐỔI MỨC ƯU TIÊN
+// UPDATE PRIORITY
 
 async updatePriority(
-  id: number,
-  userId: number,
-  updatePriorityDto: UpdatePriorityDto,
-) {
+ id:number,
+ userId:number,
+ updatePriorityDto:UpdatePriorityDto
+){
 
-  const task = await this.taskRepository.findOne({
 
-    where: {
+ const task =
+ await this.taskRepository.findOne({
 
-      id,
+  where:{
 
-      user: {
+   id,
 
-        id: userId,
-
-      },
-
-    },
-
-  });
-
-  if (!task) {
-
-    throw new Error('Task not found');
+   user:{
+    id:userId
+   }
 
   }
 
-  task.priority = updatePriorityDto.priority;
+ });
 
-  await this.taskRepository.save(task);
 
-  return task;
+ if(!task){
+
+  throw new Error("Task not found");
+
+ }
+
+
+ task.priority =
+ updatePriorityDto.priority;
+
+
+ await this.taskRepository.save(task);
+
+
+ return task;
 
 }
 
@@ -304,40 +358,44 @@ async updatePriority(
 
 
 
-// ĐÁNH DẤU HOÀN THÀNH
+// COMPLETE TASK
 
 async completeTask(
-  id: number,
-  userId: number,
-) {
+ id:number,
+ userId:number
+){
 
-  const task = await this.taskRepository.findOne({
+ const task =
+ await this.taskRepository.findOne({
 
-    where: {
+  where:{
 
-      id,
+   id,
 
-      user: {
-
-        id: userId,
-
-      },
-
-    },
-
-  });
-
-  if (!task) {
-
-    throw new Error('Task not found');
+   user:{
+    id:userId
+   }
 
   }
 
-  task.status = TaskStatus.DONE;
+ });
 
-  await this.taskRepository.save(task);
 
-  return task;
+ if(!task){
+
+  throw new Error("Task not found");
+
+ }
+
+
+ task.status =
+ TaskStatus.DONE;
+
+
+ await this.taskRepository.save(task);
+
+
+ return task;
 
 }
 
@@ -349,56 +407,53 @@ async completeTask(
 
 
 
-// TÌM KIẾM CÔNG VIỆC
+// SEARCH
 
 async search(
-  userId: number,
-  keyword: string,
-) {
+ userId:number,
+ keyword:string
+){
 
-  const tasks = await this.taskRepository.find({
 
-    where: [
+ return this.taskRepository.find({
 
-      {
-        title: Like(`%${keyword}%`),
-        user: {
-          id: userId,
-        },
-      },
+  where:[
 
-      {
-        description: Like(`%${keyword}%`),
-        user: {
-          id: userId,
-        },
-      },
+   {
 
-    ],
+    title:Like(`%${keyword}%`),
 
-    relations: {
-      user: true,
-    },
+    user:{
+      id:userId
+    }
 
-  });
+   },
 
-  return tasks.map(task => ({
 
-    ...task,
+   {
 
-    user: {
+    description:Like(`%${keyword}%`),
 
-      id: task.user.id,
+    user:{
+      id:userId
+    }
 
-      fullName: task.user.fullName,
+   }
 
-      email: task.user.email,
+  ],
 
-      avatar: task.user.avatar,
 
-    },
+  relations:{
 
-  }));
+   user:true,
+
+   category:true
+
+  }
+
+
+ });
+
 
 }
 
@@ -410,40 +465,53 @@ async search(
 
 
 
-// TASK HÔM NAY
+// TODAY
 
 today(){
 
-    const today = new Date();
-
-    today.setHours(0,0,0,0);
-
-
-    const tomorrow = new Date(today);
-
-    tomorrow.setDate(
-        tomorrow.getDate() + 1
-    );
+ const today =
+ new Date();
 
 
-    return this.taskRepository
-    .createQueryBuilder('task')
+ today.setHours(0,0,0,0);
 
-    .where(
-        'task.deadline >= :today',
-        {
-            today
-        }
-    )
 
-    .andWhere(
-        'task.deadline < :tomorrow',
-        {
-            tomorrow
-        }
-    )
 
-    .getMany();
+ const tomorrow =
+ new Date(today);
+
+
+
+ tomorrow.setDate(
+  tomorrow.getDate()+1
+ );
+
+
+
+ return this.taskRepository
+ .createQueryBuilder("task")
+
+ .leftJoinAndSelect(
+  "task.category",
+  "category"
+ )
+
+ .where(
+  "task.deadline >= :today",
+  {
+   today
+  }
+ )
+
+ .andWhere(
+  "task.deadline < :tomorrow",
+  {
+   tomorrow
+  }
+ )
+
+ .getMany();
+
 
 }
 
@@ -455,25 +523,35 @@ today(){
 
 
 
-// TASK QUÁ HẠN
+// OVERDUE
 
 overdue(){
 
-    return this.taskRepository
-    .createQueryBuilder('task')
+ return this.taskRepository
+ .createQueryBuilder("task")
 
-    .where(
-        'task.deadline < NOW()'
-    )
 
-    .andWhere(
-        'task.status != :status',
-        {
-            status: TaskStatus.DONE
-        }
-    )
+ .leftJoinAndSelect(
+  "task.category",
+  "category"
+ )
 
-    .getMany();
+
+ .where(
+  "task.deadline < NOW()"
+ )
+
+
+ .andWhere(
+  "task.status != :status",
+  {
+   status:TaskStatus.DONE
+  }
+ )
+
+
+ .getMany();
+
 
 }
 
