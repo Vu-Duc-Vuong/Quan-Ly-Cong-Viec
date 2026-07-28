@@ -121,4 +121,32 @@ async changePassword(
   };
 
 }
+async updatePassword(
+
+  id: number,
+
+  password: string,
+
+) {
+
+  await this.userRepository.update(
+
+    id,
+
+    {
+
+      password,
+
+    },
+
+  );
+
+}
+async findById(id: number) {
+
+  return this.userRepository.findOneBy({
+    id,
+  });
+
+}
 }

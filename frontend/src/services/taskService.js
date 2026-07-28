@@ -1,13 +1,15 @@
 import api from "./api";
 
-
+const layHeader = () => ({
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
+});
 
 // lấy tất cả task
 
 export const getTasks = () => {
-
-    return api.get("/tasks");
-
+  return api.get("/tasks", layHeader());
 };
 
 
@@ -16,11 +18,8 @@ export const getTasks = () => {
 // tìm kiếm task
 
 export const searchTasks = (keyword) => {
-
-    return api.get(`/tasks/search?keyword=${keyword}`);
-
+  return api.get(`/tasks/search?keyword=${keyword}`, layHeader());
 };
-
 
 
 
@@ -49,9 +48,7 @@ export const getOverdueTasks = () => {
 // thêm task
 
 export const createTask = (data) => {
-
-    return api.post("/tasks", data);
-
+  return api.post("/tasks", data, layHeader());
 };
 
 
@@ -60,9 +57,7 @@ export const createTask = (data) => {
 // cập nhật task
 
 export const updateTask = (id, data) => {
-
-    return api.put(`/tasks/${id}`, data);
-
+  return api.put(`/tasks/${id}`, data, layHeader());
 };
 
 
@@ -71,9 +66,7 @@ export const updateTask = (id, data) => {
 // xóa task
 
 export const deleteTask = (id) => {
-
-    return api.delete(`/tasks/${id}`);
-
+  return api.delete(`/tasks/${id}`, layHeader());
 };
 
 
@@ -82,7 +75,5 @@ export const deleteTask = (id) => {
 // hoàn thành task
 
 export const completeTask = (id) => {
-
-    return api.patch(`/tasks/${id}/complete`);
-
+  return api.patch(`/tasks/${id}/complete`, {}, layHeader());
 };

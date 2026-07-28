@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TasksModule } from './tasks/tasks.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-
+import { MailModule } from "./mail/mail.module";
 
 @Module({
 
@@ -46,6 +46,7 @@ TasksModule,
 
 UsersModule,
 
+MailModule,
 
 AuthModule
 

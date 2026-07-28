@@ -2,15 +2,18 @@ import {
   Injectable,
   BadRequestException,
   UnauthorizedException,
-} from '@nestjs/common';
+} from "@nestjs/common";
 
-import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from "bcrypt";
+import { JwtService } from "@nestjs/jwt";
 
-import { UsersService } from '../users/users.service';
+import { UsersService } from "../users/users.service";
+import { MailService } from "../mail/mail.service";
 
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from "./dto/register.dto";
+import { LoginDto } from "./dto/login.dto";
+import { ForgotPasswordDto } from "./dto/forgot-password.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 
 @Injectable()
 export class AuthService {
@@ -18,6 +21,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -29,7 +33,7 @@ export class AuthService {
     if (user) {
 
       throw new BadRequestException(
-        'Email đã tồn tại',
+        "Email đã tồn tại",
       );
 
     }
@@ -51,7 +55,7 @@ export class AuthService {
 
     return {
 
-      message: 'Đăng ký thành công',
+      message: "Đăng ký thành công",
 
     };
 
@@ -66,7 +70,7 @@ export class AuthService {
     if (!user) {
 
       throw new UnauthorizedException(
-        'Email hoặc mật khẩu không đúng',
+        "Email hoặc mật khẩu không đúng",
       );
 
     }
@@ -79,7 +83,7 @@ export class AuthService {
     if (!checkPassword) {
 
       throw new UnauthorizedException(
-        'Email hoặc mật khẩu không đúng',
+        "Email hoặc mật khẩu không đúng",
       );
 
     }
@@ -105,6 +109,115 @@ export class AuthService {
         email: user.email,
 
       },
+
+    };
+
+  }
+
+  async forgotPassword(
+    forgotPasswordDto: ForgotPasswordDto,
+  ) {
+
+    const user = await this.usersService.findByEmail(
+      forgotPasswordDto.email,
+    );
+
+    if (!user) {
+
+      return {
+
+        message:
+          "Nếu email tồn tại, hệ thống sẽ gửi hướng dẫn đặt lại mật khẩu",
+
+      };
+
+    }
+
+    const token = this.jwtService.sign(
+      {
+        sub: user.id,
+        email: user.email,
+      },
+      {
+        expiresIn: "15m",
+      },
+    );
+
+    const link =
+      `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+    await this.mailService.sendResetPasswordEmail(
+      user.email,
+      link,
+    );
+
+    return {
+
+      message: "Đã gửi email đặt lại mật khẩu",
+
+    };
+
+  }
+
+  async resetPassword(
+  resetPasswordDto: ResetPasswordDto,
+) {
+
+  const payload = this.jwtService.verify(
+    resetPasswordDto.token,
+  );
+
+  const user = await this.usersService.findById(
+    payload.sub,
+  );
+
+  if (!user) {
+
+    throw new BadRequestException(
+      "Người dùng không tồn tại",
+    );
+
+  }
+
+  const password = await bcrypt.hash(
+  resetPasswordDto.newPassword,
+  10,
+);
+
+  await this.usersService.updatePassword(
+    user.id,
+    password,
+  );
+
+  return {
+
+    message: "Đặt lại mật khẩu thành công",
+
+  };
+
+}
+
+  async profile(id: number) {
+
+    const user = await this.usersService.findById(id);
+
+    if (!user) {
+
+      throw new UnauthorizedException(
+        "User not found",
+      );
+
+    }
+
+    return {
+
+      id: user.id,
+
+      fullName: user.fullName,
+
+      email: user.email,
+
+      avatar: user.avatar,
 
     };
 
