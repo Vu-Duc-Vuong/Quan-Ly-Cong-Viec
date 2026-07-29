@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
     Navbar,
@@ -13,9 +13,13 @@ import {
     useNavigate
 } from "react-router-dom";
 
+import "../assets/header.css";
+
 function Header() {
 
     const [user, setUser] = useState(null);
+
+    const [keyword, setKeyword] = useState("");
 
     const navigate = useNavigate();
 
@@ -42,6 +46,85 @@ function Header() {
 
     };
 
+    // Đồng bộ với Sidebar
+    const menuItems = [
+
+        {
+            name: "Trang chủ",
+            path: "/"
+        },
+
+        {
+            name: "Công việc",
+            path: "/tasks"
+        },
+
+        {
+            name: "Thống kê",
+            path: "/statistics"
+        },
+
+        {
+            name: "Danh mục",
+            path: "/categories"
+        },
+
+        {
+            name: "Lịch làm việc",
+            path: "/calendar"
+        },
+
+        {
+            name: "Hồ sơ",
+            path: "/profile"
+        }
+
+    ];
+
+    const result = useMemo(() => {
+
+        if (!keyword.trim()) {
+
+            return [];
+
+        }
+
+        return menuItems.filter(item =>
+
+            item.name
+                .toLowerCase()
+                .includes(keyword.toLowerCase())
+
+        );
+
+    }, [keyword]);
+
+    const handleGo = (item) => {
+
+        navigate(item.path);
+
+        setKeyword("");
+
+    };
+
+    const handleEnter = (e) => {
+
+        if (
+
+            e.key === "Enter"
+
+            &&
+
+            result.length > 0
+
+        ) {
+
+            handleGo(result[0]);
+
+        }
+
+    };
+
     return (
 
         <Navbar
@@ -63,29 +146,19 @@ function Header() {
 
                 </Navbar.Brand>
 
-
-
                 {/* SEARCH */}
 
-                <div
-                    className="mx-auto"
-                    style={{
-                        width: "420px",
-                        position: "relative"
-                    }}
-                >
+                <div className="header-search">
 
                     <Form.Control
 
-                        type="text"
+                        value={keyword}
+
+                        onChange={e => setKeyword(e.target.value)}
+
+                        onKeyDown={handleEnter}
 
                         placeholder="Tìm kiếm chức năng..."
-
-                        style={{
-                            borderRadius: "999px",
-                            paddingRight: "45px",
-                            background: "#f5f5f5"
-                        }}
 
                     />
 
@@ -93,31 +166,47 @@ function Header() {
 
                         src="http://localhost:3000/images/kinhlup.png"
 
-                        alt="Search"
+                        alt="search"
 
-                        style={{
-
-                            position: "absolute",
-
-                            right: "15px",
-
-                            top: "50%",
-
-                            transform: "translateY(-50%)",
-
-                            width: "20px",
-
-                            height: "20px",
-
-                            opacity: 0.7
-
-                        }}
+                        className="search-icon"
 
                     />
 
+                    {
+
+                        result.length > 0 && (
+
+                            <div className="search-result">
+
+                                {
+
+                                    result.map(item => (
+
+                                        <div
+
+                                            key={item.path}
+
+                                            className="search-item"
+
+                                            onClick={() => handleGo(item)}
+
+                                        >
+
+                                            {item.name}
+
+                                        </div>
+
+                                    ))
+
+                                }
+
+                            </div>
+
+                        )
+
+                    }
+
                 </div>
-
-
 
                 {/* USER */}
 
@@ -131,48 +220,29 @@ function Header() {
 
                         title={
 
-                            <span
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "10px"
-                                }}
-                            >
+                            <div className="user-dropdown-title">
 
                                 <img
 
                                     src={
                                         user?.avatar
                                             ? `http://localhost:3000/images/${user.avatar}`
-                                            : "https://ui-avatars.com/api/?name=" +
-                                              encodeURIComponent(
-                                                  user?.fullName || "User"
-                                              )
+                                            : "http://localhost:3000/images/avatar.png"
                                     }
 
-                                    alt="Avatar"
+                                    alt="avatar"
 
-                                    style={{
-
-                                        width: "38px",
-
-                                        height: "38px",
-
-                                        borderRadius: "50%",
-
-                                        objectFit: "cover"
-
-                                    }}
+                                    className="header-avatar"
 
                                 />
 
-                                <span>
+                                <span className="header-username">
 
                                     {user?.fullName || "Tài khoản"}
 
                                 </span>
 
-                            </span>
+                            </div>
 
                         }
 
