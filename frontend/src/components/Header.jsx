@@ -80,6 +80,7 @@ function Header() {
 
 
 
+
     const menuItems=[
 
 
@@ -128,6 +129,7 @@ function Header() {
 
 
 
+
     const result = useMemo(()=>{
 
 
@@ -157,6 +159,7 @@ function Header() {
 
 
 
+
     const handleGo=(item)=>{
 
 
@@ -166,6 +169,7 @@ function Header() {
 
 
     };
+
 
 
 
@@ -212,31 +216,10 @@ function Header() {
 
 
 
-                {/* BRAND */}
+                {/* TAGLINE ONLY */}
 
 
                 <Navbar.Brand className="brand-area">
-
-
-                    <div className="brand-logo">
-
-
-                        <span className="brand-task">
-
-                            Task
-
-                        </span>
-
-
-                        <span className="brand-it">
-
-                            IT
-
-                        </span>
-
-
-                    </div>
-
 
 
                     <div className="header-tagline">
@@ -244,7 +227,6 @@ function Header() {
                         Hệ thống Quản lý công việc
 
                     </div>
-
 
 
                 </Navbar.Brand>
@@ -304,7 +286,6 @@ function Header() {
 
 
                         />
-
 
 
 
@@ -404,7 +385,6 @@ function Header() {
 
 
                             title={
-
 
 
                                 <div className="user-dropdown-title">
