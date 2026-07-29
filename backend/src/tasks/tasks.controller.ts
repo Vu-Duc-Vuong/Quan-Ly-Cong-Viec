@@ -9,6 +9,7 @@ import {
   Patch,
   Query,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 
 import { TasksService } from './tasks.service';
@@ -21,186 +22,302 @@ import { UpdatePriorityDto } from './dto/update-priority.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GetUser } from '../auth/get-user.decorator';
 
+
 @Controller('tasks')
+@UseGuards(JwtAuthGuard)
 export class TasksController {
+
 
   constructor(
     private readonly tasksService: TasksService,
   ) {}
 
+
+
+  // GET ALL TASK
+
   @Get()
-  @UseGuards(JwtAuthGuard)
   findAll(
     @GetUser() user: any,
   ) {
-    return this.tasksService.findAll(user.id);
+
+    return this.tasksService.findAll(
+      user.id,
+    );
+
   }
+
+
+
+
+
+  // SEARCH TASK
 
   @Get('search')
+  search(
 
-@UseGuards(JwtAuthGuard)
+    @GetUser() user: any,
 
-search(
+    @Query('keyword') keyword: string,
 
-  @GetUser() user: any,
+  ) {
 
-  @Query('keyword') keyword: string,
+    return this.tasksService.search(
 
-) {
+      user.id,
 
-  return this.tasksService.search(
+      keyword,
 
-    user.id,
+    );
 
-    keyword,
+  }
 
-  );
 
-}
+
+
+
+  // TASK TODAY
 
   @Get('today')
-  today() {
+  today(
+
+    @GetUser() user: any,
+
+  ) {
+
     return this.tasksService.today();
+
   }
+
+
+
+
+
+  // TASK OVERDUE
 
   @Get('overdue')
-  overdue() {
+  overdue(
+
+    @GetUser() user: any,
+
+  ) {
+
     return this.tasksService.overdue();
+
   }
+
+
+
+
+
+  // GET ONE TASK
 
   @Get(':id')
-@UseGuards(JwtAuthGuard)
-findOne(
+  findOne(
 
-  @Param('id') id: string,
+    @Param(
+      'id',
+      ParseIntPipe,
+    )
+    id:number,
 
-  @GetUser() user: any,
+    @GetUser() user:any,
 
-) {
-
-  return this.tasksService.findOne(
-
-    +id,
-
-    user.id,
-
-  );
-
-}
-
-  @Post()
-  @UseGuards(JwtAuthGuard)
-  create(
-    @GetUser() user: any,
-    @Body() createTaskDto: CreateTaskDto,
   ) {
-    return this.tasksService.create(
+
+    return this.tasksService.findOne(
+
+      id,
+
       user.id,
-      createTaskDto,
+
     );
+
   }
 
+
+
+
+
+  // CREATE TASK
+
+  @Post()
+  create(
+
+    @GetUser() user:any,
+
+    @Body() createTaskDto:CreateTaskDto,
+
+  ) {
+
+    return this.tasksService.create(
+
+      user.id,
+
+      createTaskDto,
+
+    );
+
+  }
+
+
+
+
+
+  // UPDATE TASK
+
   @Put(':id')
-@UseGuards(JwtAuthGuard)
-update(
+  update(
 
-  @Param('id') id: string,
+    @Param(
+      'id',
+      ParseIntPipe,
+    )
+    id:number,
 
-  @GetUser() user: any,
+    @GetUser() user:any,
 
-  @Body() updateTaskDto: UpdateTaskDto,
+    @Body() updateTaskDto:UpdateTaskDto,
 
-) {
+  ) {
 
-  return this.tasksService.update(
+    return this.tasksService.update(
 
-    +id,
+      id,
 
-    user.id,
+      user.id,
 
-    updateTaskDto,
+      updateTaskDto,
 
-  );
+    );
 
-}
+  }
+
+
+
+
+
+  // DELETE TASK
 
   @Delete(':id')
-@UseGuards(JwtAuthGuard)
-remove(
-  @Param('id') id: string,
-  @GetUser() user: any,
-) {
-  return this.tasksService.remove(
-    +id,
-    user.id,
-  );
-}
+  remove(
+
+    @Param(
+      'id',
+      ParseIntPipe,
+    )
+    id:number,
+
+    @GetUser() user:any,
+
+  ) {
+
+    return this.tasksService.remove(
+
+      id,
+
+      user.id,
+
+    );
+
+  }
+
+
+
+
+
+  // UPDATE STATUS
 
   @Patch(':id/status')
-@UseGuards(JwtAuthGuard)
-updateStatus(
+  updateStatus(
 
-  @Param('id') id: string,
+    @Param(
+      'id',
+      ParseIntPipe,
+    )
+    id:number,
 
-  @GetUser() user: any,
+    @GetUser() user:any,
 
-  @Body() updateStatusDto: UpdateStatusDto,
+    @Body()
+    updateStatusDto:UpdateStatusDto,
 
-) {
+  ) {
 
-  return this.tasksService.updateStatus(
+    return this.tasksService.updateStatus(
 
-    +id,
+      id,
 
-    user.id,
+      user.id,
 
-    updateStatusDto,
+      updateStatusDto,
 
-  );
+    );
 
-}
+  }
+
+
+
+
+
+  // UPDATE PRIORITY
 
   @Patch(':id/priority')
-@UseGuards(JwtAuthGuard)
-updatePriority(
+  updatePriority(
 
-  @Param('id') id: string,
+    @Param(
+      'id',
+      ParseIntPipe,
+    )
+    id:number,
 
-  @GetUser() user: any,
+    @GetUser() user:any,
 
-  @Body() updatePriorityDto: UpdatePriorityDto,
+    @Body()
+    updatePriorityDto:UpdatePriorityDto,
 
-) {
+  ) {
 
-  return this.tasksService.updatePriority(
+    return this.tasksService.updatePriority(
 
-    +id,
+      id,
 
-    user.id,
+      user.id,
 
-    updatePriorityDto,
+      updatePriorityDto,
 
-  );
+    );
 
-}
+  }
+
+
+
+
+
+  // COMPLETE TASK
 
   @Patch(':id/complete')
-@UseGuards(JwtAuthGuard)
-completeTask(
+  completeTask(
 
-  @Param('id') id: string,
+    @Param(
+      'id',
+      ParseIntPipe,
+    )
+    id:number,
 
-  @GetUser() user: any,
+    @GetUser() user:any,
 
-) {
+  ) {
 
-  return this.tasksService.completeTask(
+    return this.tasksService.completeTask(
 
-    +id,
+      id,
 
-    user.id,
+      user.id,
 
-  );
+    );
 
-}
+  }
+
+
 }
