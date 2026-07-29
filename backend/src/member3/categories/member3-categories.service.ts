@@ -26,22 +26,52 @@ export class Member3CategoriesService {
 
 
 
+  // Lấy danh sách category + công việc bên trong
 
-  // Lấy danh sách category
+  async findAll(userId: number) {
 
-  findAll(userId:number){
 
-    return this.categoryRepository.find({
+    const categories = await this.categoryRepository.find({
 
-      where:{
+      where: {
         userId
       },
 
-      order:{
-        name:'ASC'
+      relations: {
+        tasks: true,
+      },
+
+      order: {
+        name: 'ASC'
       }
 
     });
+
+
+
+    return categories.map(category => ({
+
+      id: category.id,
+
+      name: category.name,
+
+      description: category.description,
+
+      tasks: category.tasks?.map(task => ({
+
+        id: task.id,
+
+        title: task.title,
+
+        status: task.status,
+
+        priority: task.priority,
+
+        deadline: task.deadline,
+
+      })) || []
+
+    }));
 
   }
 
@@ -74,6 +104,7 @@ export class Member3CategoriesService {
     return this.categoryRepository.save(category);
 
   }
+
 
 
 
@@ -134,7 +165,6 @@ export class Member3CategoriesService {
     return this.categoryRepository.save(category);
 
   }
-
 
 
 
@@ -234,6 +264,7 @@ export class Member3CategoriesService {
 
 
 
+
     const category =
     await this.categoryRepository.findOne({
 
@@ -253,6 +284,7 @@ export class Member3CategoriesService {
       );
 
     }
+
 
 
 
