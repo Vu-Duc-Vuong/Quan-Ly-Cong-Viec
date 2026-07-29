@@ -51,8 +51,6 @@ function Login() {
 
       alert("Đăng nhập thành công");
 
-      setLoading(false);
-
       navigate("/");
 
     } catch (error) {
@@ -66,6 +64,10 @@ function Login() {
       console.log(error.response?.data);
 
       alert("Email hoặc mật khẩu không đúng");
+
+    } finally {
+
+      setLoading(false);
 
     }
 

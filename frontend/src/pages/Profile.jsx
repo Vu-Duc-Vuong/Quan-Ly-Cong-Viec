@@ -64,7 +64,7 @@ function Profile() {
 
 
             }
-            catch(error){
+            catch{
 
 
                 alert("Không lấy được thông tin");
@@ -79,7 +79,7 @@ function Profile() {
         layThongTin();
 
 
-    },[]);
+    },[token]);
 
 
 
@@ -91,12 +91,9 @@ function Profile() {
 
 const getAvatar = ()=>{
 
-    const API_URL = import.meta.env.VITE_API_URL;
-
-
     if(!user.avatar){
 
-        return `${API_URL}/images/avatar.png`;
+        return "/images/avatar.png";
 
     }
 
@@ -108,7 +105,7 @@ const getAvatar = ()=>{
     }
 
 
-    return `${API_URL}/images/${user.avatar}`;
+    return `/images/${user.avatar}`;
 
 };
 
@@ -144,7 +141,7 @@ const getAvatar = ()=>{
 
 
         }
-        catch(error){
+        catch{
 
 
             alert("Cập nhật thất bại");

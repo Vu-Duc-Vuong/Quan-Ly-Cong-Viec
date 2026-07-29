@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import {
     Navbar,
@@ -23,40 +23,49 @@ import {
 import "../assets/header.css";
 
 
+const menuItems = [
+    {
+        name:"Trang chủ",
+        path:"/"
+    },
+    {
+        name:"Công việc",
+        path:"/tasks"
+    },
+    {
+        name:"Thống kê",
+        path:"/statistics"
+    },
+    {
+        name:"Danh mục",
+        path:"/categories"
+    },
+    {
+        name:"Lịch làm việc",
+        path:"/calendar"
+    },
+    {
+        name:"Hồ sơ",
+        path:"/profile"
+    }
+];
+
+
 
 function Header() {
 
 
-    const [user,setUser] = useState(null);
+    const [user,setUser] = useState(()=>{
+
+        const userData = localStorage.getItem("user");
+
+        return userData ? JSON.parse(userData) : null;
+
+    });
 
     const [keyword,setKeyword] = useState("");
 
     const navigate = useNavigate();
-
-
-    const API_URL = import.meta.env.VITE_API_URL;
-
-
-
-
-    useEffect(()=>{
-
-
-        const userData = localStorage.getItem("user");
-
-
-        if(userData){
-
-            setUser(JSON.parse(userData));
-
-        }
-
-
-    },[]);
-
-
-
-
 
 
     const handleLogout=()=>{
@@ -72,64 +81,7 @@ function Header() {
 
         navigate("/login");
 
-
     };
-
-
-
-
-
-
-
-
-    const menuItems=[
-
-
-        {
-            name:"Trang chủ",
-            path:"/"
-        },
-
-
-        {
-            name:"Công việc",
-            path:"/tasks"
-        },
-
-
-        {
-            name:"Thống kê",
-            path:"/statistics"
-        },
-
-
-        {
-            name:"Danh mục",
-            path:"/categories"
-        },
-
-
-        {
-            name:"Lịch làm việc",
-            path:"/calendar"
-        },
-
-
-        {
-            name:"Hồ sơ",
-            path:"/profile"
-        }
-
-
-    ];
-
-
-
-
-
-
-
-
 
     const result = useMemo(()=>{
 
@@ -280,8 +232,7 @@ function Header() {
 
                         <img
 
-
-                            src={`${API_URL}/images/kinhlup.png`}
+                            src="/images/kinhlup.png"
 
 
                             alt="search"
@@ -406,11 +357,11 @@ function Header() {
 
                                             ?
 
-                                            `${API_URL}/images/${user.avatar}`
+                                                `/images/${user.avatar}`
 
                                             :
 
-                                            `${API_URL}/images/avatar.png`
+                                                "/images/avatar.png"
 
                                         }
 

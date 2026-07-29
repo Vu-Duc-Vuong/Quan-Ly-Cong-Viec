@@ -16,15 +16,21 @@ async function bootstrap() {
   app.enableCors({
 
     origin: (origin, callback) => {
+
       if (
         !origin ||
-        origin === 'http://localhost:5173' ||
-        /\.app\.github\.dev$/.test(origin)
+        /^https?:\/\/localhost(:\d+)?$/.test(origin) ||
+        /^https?:\/\/127\.0\.0\.1(:\d+)?$/.test(origin) ||
+        /^https?:\/\/.*\.app\.github\.dev$/.test(origin) ||
+        /^https?:\/\/.*\.github\.dev$/.test(origin) ||
+        /^https?:\/\/.*\.devtunnels\.ms$/.test(origin)
       ) {
         callback(null, true);
-      } else {
+      } 
+      else {
         callback(new Error('Not allowed by CORS'));
       }
+
     },
 
     credentials: true,
@@ -48,15 +54,12 @@ async function bootstrap() {
 
 
   // Cho phép truy cập ảnh trong backend/images
-  app.useStaticAssets(
-
-    join(__dirname, '..', 'images'),
-
-    {
-      prefix: '/images/'
-    }
-
-  );
+app.useStaticAssets(
+  join(process.cwd(), 'images'),
+  {
+    prefix: '/images/'
+  }
+);
 
 
 
