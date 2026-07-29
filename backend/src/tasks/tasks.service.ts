@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 
@@ -44,8 +49,10 @@ async create(
   });
 
 
-  if(!user){
-    throw new Error("User not found");
+  if (!user) {
+    throw new NotFoundException(
+      'Không tìm thấy người dùng',
+    );
   }
 
 
@@ -59,6 +66,13 @@ let category: Category | null = null;
         id:createTaskDto.categoryId
       });
 
+  }
+
+
+  if (createTaskDto.categoryId && !category) {
+    throw new NotFoundException(
+      'Không tìm thấy danh mục',
+    );
   }
 
 
@@ -82,7 +96,13 @@ let category: Category | null = null;
   });
 
 
-  return this.taskRepository.save(task);
+  try {
+    return await this.taskRepository.save(task);
+  } catch {
+    throw new InternalServerErrorException(
+      'Không thể tạo công việc',
+    );
+  }
 
 }
 
@@ -127,7 +147,7 @@ async findOne(
   userId:number,
 ){
 
- return this.taskRepository.findOne({
+ const task = await this.taskRepository.findOne({
 
    where:{
 
@@ -148,6 +168,14 @@ async findOne(
    }
 
  });
+
+ if (!task) {
+   throw new NotFoundException(
+     'Không tìm thấy công việc',
+   );
+ }
+
+ return task;
 
 }
 
@@ -181,9 +209,11 @@ async update(
  });
 
 
- if(!task){
+ if (!task) {
 
-  throw new Error("Task not found");
+  throw new NotFoundException(
+    'Không tìm thấy công việc',
+  );
 
  }
 
@@ -205,6 +235,13 @@ async update(
    });
 
 
+   if (!category) {
+     throw new NotFoundException(
+       'Không tìm thấy danh mục',
+     );
+   }
+
+
    updateData.category = category;
 
    delete updateData.categoryId;
@@ -213,10 +250,16 @@ async update(
 
 
 
- await this.taskRepository.update(
-   id,
-   updateData
- );
+ try {
+   await this.taskRepository.update(
+     id,
+     updateData
+   );
+ } catch {
+   throw new InternalServerErrorException(
+     'Không thể cập nhật công việc',
+   );
+ }
 
 
  return this.findOne(id,userId);
@@ -237,15 +280,13 @@ async remove(
  userId:number
 ){
 
- return this.taskRepository.delete({
+ const task = await this.findOne(id, userId);
 
-  id,
+ await this.taskRepository.remove(task);
 
-  user:{
-    id:userId
-  }
-
- });
+ return {
+   message: 'Xóa công việc thành công',
+ };
 
 }
 
@@ -281,9 +322,11 @@ async updateStatus(
  });
 
 
- if(!task){
+ if (!task) {
 
-  throw new Error("Task not found");
+  throw new NotFoundException(
+    'Không tìm thấy công việc',
+  );
 
  }
 
@@ -292,7 +335,13 @@ async updateStatus(
  updateStatusDto.status;
 
 
- await this.taskRepository.save(task);
+ try {
+   await this.taskRepository.save(task);
+ } catch {
+   throw new InternalServerErrorException(
+     'Không thể cập nhật trạng thái',
+   );
+ }
 
 
  return this.findOne(id,userId);
@@ -332,9 +381,11 @@ async updatePriority(
  });
 
 
- if(!task){
+ if (!task) {
 
-  throw new Error("Task not found");
+  throw new NotFoundException(
+    'Không tìm thấy công việc',
+  );
 
  }
 
@@ -343,7 +394,13 @@ async updatePriority(
  updatePriorityDto.priority;
 
 
- await this.taskRepository.save(task);
+ try {
+   await this.taskRepository.save(task);
+ } catch {
+   throw new InternalServerErrorException(
+     'Không thể cập nhật độ ưu tiên',
+   );
+ }
 
 
  return task;
@@ -381,9 +438,11 @@ async completeTask(
  });
 
 
- if(!task){
+ if (!task) {
 
-  throw new Error("Task not found");
+  throw new NotFoundException(
+    'Không tìm thấy công việc',
+  );
 
  }
 
@@ -392,7 +451,13 @@ async completeTask(
  TaskStatus.DONE;
 
 
- await this.taskRepository.save(task);
+ try {
+   await this.taskRepository.save(task);
+ } catch {
+   throw new InternalServerErrorException(
+     'Không thể cập nhật công việc',
+   );
+ }
 
 
  return task;
@@ -413,6 +478,12 @@ async search(
  userId:number,
  keyword:string
 ){
+
+ if (!keyword.trim()) {
+   throw new BadRequestException(
+     'Từ khóa tìm kiếm không được để trống',
+   );
+ }
 
 
  return this.taskRepository.find({

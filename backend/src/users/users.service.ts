@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -7,146 +12,137 @@ import { User } from './user.entity';
 
 @Injectable()
 export class UsersService {
-
   constructor(
-
     @InjectRepository(User)
-    private userRepository: Repository<User>
-
+    private readonly userRepository: Repository<User>,
   ) {}
 
-  create(user: Partial<User>) {
-
-    return this.userRepository.save(user);
-
+  async create(user: Partial<User>) {
+    try {
+      return await this.userRepository.save(user);
+    } catch {
+      throw new InternalServerErrorException(
+        'Không thể tạo người dùng',
+      );
+    }
   }
 
-  findByEmail(email: string) {
-
+  async findByEmail(email: string) {
     return this.userRepository.findOneBy({
-      email
+      email,
+    });
+  }
+
+  async updateProfile(
+    id: number,
+    updateProfileDto: any,
+  ) {
+    const user = await this.userRepository.findOneBy({
+      id,
     });
 
-  }
-  async updateProfile(
+    if (!user) {
+      throw new NotFoundException(
+        'Không tìm thấy người dùng',
+      );
+    }
 
-  id: number,
-
-  updateProfileDto: any,
-
-) {
-
-  await this.userRepository.update(
-    id,
-    updateProfileDto,
-  );
-
-  const user = await this.userRepository.findOneBy({
-    id,
-  });
-
-  if (!user) {
-    return null;
-  }
-
-  const { password, ...result } = user;
-
-  return result;
-
-}
-async changePassword(
-
-  id: number,
-
-  oldPassword: string,
-
-  newPassword: string,
-
-) {
-
-  const user = await this.userRepository.findOneBy({
-
-    id,
-
-  });
-
-  if (!user) {
-
-    throw new BadRequestException(
-      'Không tìm thấy người dùng',
+    await this.userRepository.update(
+      id,
+      updateProfileDto,
     );
 
+    const updatedUser = await this.userRepository.findOneBy({
+      id,
+    });
+
+    if (!updatedUser) {
+      throw new NotFoundException(
+        'Không tìm thấy người dùng',
+      );
+    }
+
+    const { password, ...result } = updatedUser;
+
+    return result;
   }
 
-  const check = await bcrypt.compare(
+  async changePassword(
+    id: number,
+    oldPassword: string,
+    newPassword: string,
+  ) {
+    const user = await this.userRepository.findOneBy({
+      id,
+    });
 
-    oldPassword,
+    if (!user) {
+      throw new NotFoundException(
+        'Không tìm thấy người dùng',
+      );
+    }
 
-    user.password,
-
-  );
-
-  if (!check) {
-
-    throw new BadRequestException(
-      'Mật khẩu cũ không đúng',
+    const check = await bcrypt.compare(
+      oldPassword,
+      user.password,
     );
 
+    if (!check) {
+      throw new BadRequestException(
+        'Mật khẩu cũ không đúng',
+      );
+    }
+
+    const password = await bcrypt.hash(
+      newPassword,
+      10,
+    );
+
+    await this.userRepository.update(
+      id,
+      {
+        password,
+      },
+    );
+
+    return {
+      message: 'Đổi mật khẩu thành công',
+    };
   }
 
-  const password = await bcrypt.hash(
+  async updatePassword(
+    id: number,
+    password: string,
+  ) {
+    const user = await this.userRepository.findOneBy({
+      id,
+    });
 
-    newPassword,
+    if (!user) {
+      throw new NotFoundException(
+        'Không tìm thấy người dùng',
+      );
+    }
 
-    10,
+    await this.userRepository.update(
+      id,
+      {
+        password,
+      },
+    );
+  }
 
-  );
+  async findById(id: number) {
+    const user = await this.userRepository.findOneBy({
+      id,
+    });
 
-  await this.userRepository.update(
+    if (!user) {
+      throw new NotFoundException(
+        'Không tìm thấy người dùng',
+      );
+    }
 
-    id,
-
-    {
-
-      password,
-
-    },
-
-  );
-
-  return {
-
-    message: 'Đổi mật khẩu thành công',
-
-  };
-
-}
-async updatePassword(
-
-  id: number,
-
-  password: string,
-
-) {
-
-  await this.userRepository.update(
-
-    id,
-
-    {
-
-      password,
-
-    },
-
-  );
-
-}
-async findById(id: number) {
-
-  return this.userRepository.findOneBy({
-    id,
-  });
-
-}
+    return user;
+  }
 }

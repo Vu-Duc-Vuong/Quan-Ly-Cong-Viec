@@ -8,58 +8,45 @@ import { AuthModule } from './auth/auth.module';
 import { MailModule } from "./mail/mail.module";
 import { Member3Module } from './member3/member3.module';
 
-import * as fs from 'fs';
-
 
 @Module({
+  imports: [
 
-imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
 
-ConfigModule.forRoot({
-  isGlobal: true,
-}),
+    TypeOrmModule.forRoot({
 
+      type: 'mysql',
 
-TypeOrmModule.forRoot({
+      host: process.env.DB_HOST,
 
-type: 'mysql',
+      port: Number(process.env.DB_PORT),
 
-host: process.env.DB_HOST,
+      username: process.env.DB_USERNAME,
 
-port: Number(process.env.DB_PORT),
+      password: process.env.DB_PASSWORD,
 
-username: process.env.DB_USERNAME,
+      database: process.env.DB_DATABASE,
 
-password: process.env.DB_PASSWORD,
+      autoLoadEntities: true,
 
-database: process.env.DB_DATABASE,
+      synchronize: true,
 
-autoLoadEntities: true,
+    }),
 
-synchronize: true,
+    TasksModule,
 
-ssl: {
-  ca: fs.readFileSync(
-    process.env.DB_SSL_CA || './ca.pem'
-  )
-}
+    UsersModule,
 
-}),
+    MailModule,
 
+    AuthModule,
 
-TasksModule,
+    Member3Module
 
-
-UsersModule,
-
-MailModule,
-
-AuthModule,
-
-Member3Module
-
-],
-
+  ],
 })
 
 export class AppModule {}
