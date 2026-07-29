@@ -8,6 +8,9 @@ import { AuthModule } from './auth/auth.module';
 import { MailModule } from "./mail/mail.module";
 import { Member3Module } from './member3/member3.module';
 
+import * as fs from 'fs';
+
+
 @Module({
 
 imports: [
@@ -36,7 +39,9 @@ autoLoadEntities: true,
 synchronize: true,
 
 ssl: {
-  rejectUnauthorized: false
+  ca: fs.readFileSync(
+    process.env.DB_SSL_CA || './ca.pem'
+  )
 }
 
 }),
