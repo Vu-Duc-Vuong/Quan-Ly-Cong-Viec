@@ -39,73 +39,79 @@ export class Task {
 
 
   @PrimaryGeneratedColumn()
-  id: number;
+  id:number;
 
 
   @Column()
-  title: string;
+  title:string;
 
 
   @Column({
-    nullable: true,
+    nullable:true,
   })
-  description: string;
+  description:string;
 
 
   @Column({
-    type: 'enum',
-    enum: TaskStatus,
-    default: TaskStatus.TODO,
+    type:'enum',
+    enum:TaskStatus,
+    default:TaskStatus.TODO,
   })
-  status: TaskStatus;
+  status:TaskStatus;
 
 
   @Column({
-    type: 'enum',
-    enum: TaskPriority,
-    default: TaskPriority.MEDIUM,
+    type:'enum',
+    enum:TaskPriority,
+    default:TaskPriority.MEDIUM,
   })
-  priority: TaskPriority;
+  priority:TaskPriority;
 
 
   @Column({
-    type: 'datetime',
-    nullable: true,
+    type:'datetime',
+    nullable:true,
   })
-  deadline: Date;
+  deadline:Date;
 
 
-  // Quan hệ với User
+
   @ManyToOne(
-    () => User,
-    user => user.tasks,
+    ()=>User,
+    user=>user.tasks,
     {
-      nullable: true,
-    }
-  )
-  user: User;
-
-
-  // Quan hệ với Category
-  @ManyToOne(
-    () => Category,
-    category => category.tasks,
-    {
-      nullable: true,
-      onDelete: 'SET NULL',
+      nullable:true
     }
   )
   @JoinColumn({
-    name: 'categoryId',
+    name:'userId'
   })
-category: Category | null;
+  user:User;
+
+
+
+  // FIX CATEGORY
+
+  @ManyToOne(
+    ()=>Category,
+    category=>category.tasks,
+    {
+      nullable:true,
+      onDelete:'SET NULL'
+    }
+  )
+  @JoinColumn({
+    name:'categoryId'
+  })
+  category:Category | null;
+
 
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt:Date;
 
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt:Date;
 
 }
