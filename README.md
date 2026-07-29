@@ -18,7 +18,6 @@ Dự án Xây dựng Ứng dụng Quản lý Công việc (Task Management Appli
 - **UI & Styling:** Custom CSS3, Responsive Design, React Icons.
 
 ---
-
 ## 📁 2. Cấu trúc thư mục dự án
 
 Quan-Ly-Cong-Viec-main/
@@ -26,25 +25,26 @@ Quan-Ly-Cong-Viec-main/
 │   ├── src/
 │   │   ├── auth/            # Module Xác thực (Login, Register, Reset Pass)
 │   │   ├── users/           # Module Quản lý Người dùng & Profile
-│   │   ├── tasks/           # Module Quản lý Công việc (CRUD, Trạng thái, Độ ưu tiên)
+│   │   ├── tasks/           # Module Quản lý Công việc
 │   │   ├── mail/            # Module Gửi Email
-│   │   ├── member3/         # Module Chức năng mở rộng (Danh mục, Thống kê riêng)
-│   │   ├── project/         # Module Quản lý Dự án & Danh mục dự án
+│   │   ├── member3/         # Module Chức năng mở rộng
+│   │   ├── project/         # Module Quản lý Dự án
 │   │   ├── app.module.ts    # Module gốc của ứng dụng
 │   │   └── main.ts          # Entry point của Backend
 │   ├── test/                # Unit Test & E2E Test
-│   └── .env                 # Cấu hình biến môi trường Backend
+│   └── .env                 # Cấu hình môi trường Backend
 │
 └── frontend/                 # Mã nguồn Client (ReactJS + Vite)
-├── src/
-│   ├── assets/          # Hình ảnh, file CSS tĩnh
-│   ├── components/      # Component dùng chung (Header, Sidebar, TaskCard, ProtectedRoute)
-│   ├── layouts/         # Khung giao diện chính (MainLayout)
-│   ├── pages/           # Các trang chính (Dashboard, Tasks, Categories, Statistics, Calendar, Profile, Auth)
-│   ├── routes/          # Cấu hình đường dẫn (AppRoutes)
-│   ├── services/        # Gọi API tích hợp (api.js, authService.js, taskService.js)
-│   └── member3/         # Component & Pages phân quyền/chức năng riêng
-└── .env                 # Cấu hình URL API Backend
+    ├── src/
+    │   ├── assets/          # Hình ảnh, file CSS tĩnh
+    │   ├── components/      # Component dùng chung
+    │   ├── layouts/         # Khung giao diện chính
+    │   ├── pages/           # Các trang giao diện chính
+    │   ├── routes/          # Cấu hình đường dẫn
+    │   ├── services/        # Gọi API tích hợp
+    │   └── member3/         # Chức năng phân quyền riêng
+    └── .env                 # Cấu hình URL API Backend
+
 
 ## 🚀 3. Hướng dẫn Cài đặt & Khởi chạy
 
