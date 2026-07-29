@@ -30,7 +30,7 @@ function MainLayout() {
 
 
 
-                {/* HEADER CỐ ĐỊNH */}
+                {/* HEADER */}
 
                 <header className="header-fixed">
 
@@ -42,12 +42,18 @@ function MainLayout() {
 
 
 
-                {/* CHỈ CONTENT NÀY CUỘN */}
+                {/* CONTENT CUỘN */}
 
                 <main className="main-scroll">
 
 
-                    <Outlet />
+                    <div className="page-container">
+
+
+                        <Outlet />
+
+
+                    </div>
 
 
                 </main>

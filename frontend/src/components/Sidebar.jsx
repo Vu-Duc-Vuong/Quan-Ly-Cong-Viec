@@ -1,5 +1,22 @@
-import { Nav } from "react-bootstrap";
-import { Link, useLocation } from "react-router-dom";
+import {
+    Nav
+} from "react-bootstrap";
+
+
+import {
+    Link,
+    useLocation
+} from "react-router-dom";
+
+
+import {
+    Home,
+    ListTodo,
+    BarChart3,
+    FolderKanban,
+    CalendarDays
+} from "lucide-react";
+
 
 
 function Sidebar() {
@@ -9,34 +26,49 @@ function Sidebar() {
 
 
 
+
     const menuItems = [
+
 
         {
             name:"Trang chủ",
-            path:"/"
+            path:"/",
+            icon:<Home size={18}/>
         },
+
 
         {
             name:"Công việc",
-            path:"/tasks"
+            path:"/tasks",
+            icon:<ListTodo size={18}/>
         },
+
 
         {
             name:"Thống kê",
-            path:"/statistics"
+            path:"/statistics",
+            icon:<BarChart3 size={18}/>
         },
+
 
         {
             name:"Danh mục",
-            path:"/categories"
+            path:"/categories",
+            icon:<FolderKanban size={18}/>
         },
+
 
         {
             name:"Lịch làm việc",
-            path:"/calendar"
+            path:"/calendar",
+            icon:<CalendarDays size={18}/>
         }
 
+
     ];
+
+
+
 
 
 
@@ -44,36 +76,70 @@ function Sidebar() {
     return (
 
 
-        <div className="sidebar p-3">
+        <div className="sidebar">
 
 
-            <h3 className="sidebar-title text-center mb-5">
 
-                Manager
+
+
+            {/* LOGO */}
+
+
+            <h3 className="sidebar-title">
+
+
+                <span className="brand-task">
+
+                    Task
+
+                </span>
+
+
+                <span className="brand-it">
+
+                    IT
+
+                </span>
+
+
 
             </h3>
 
 
 
 
-            <Nav className="flex-column gap-2">
 
+
+
+
+
+            {/* MENU */}
+
+
+            <Nav className="flex-column">
 
 
                 {
+
+
                     menuItems.map(item=>(
 
 
                         <Nav.Link
 
+
                             key={item.path}
 
+
                             as={Link}
+
 
                             to={item.path}
 
 
+
                             className={
+
 
                                 location.pathname === item.path
 
@@ -85,23 +151,54 @@ function Sidebar() {
 
                                 "menu-item"
 
+
                             }
+
 
 
                         >
 
-                            {item.name}
+
+
+
+                            <span className="menu-icon">
+
+
+                                {item.icon}
+
+
+                            </span>
+
+
+
+
+
+                            <span>
+
+
+                                {item.name}
+
+
+                            </span>
+
+
 
 
                         </Nav.Link>
 
 
+
                     ))
+
+
                 }
 
 
 
             </Nav>
+
+
+
 
 
 
@@ -112,6 +209,7 @@ function Sidebar() {
 
 
 }
+
 
 
 export default Sidebar;

@@ -1,101 +1,455 @@
+/* ========================= */
+/* HEADER */
+/* ========================= */
+
+
+.header-navbar{
+
+    background:#0f172a !important;
+
+    height:68px;
+
+    padding:0 24px;
+
+}
+
+
+
+
+
+.header-navbar .container-fluid{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+}
+
+
+
+
+
+
+/* ========================= */
+/* BRAND */
+/* ========================= */
+
+
+.brand-area{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    text-decoration:none;
+
+    margin:0;
+
+}
+
+
+
+
+.brand-logo{
+
+    font-size:26px;
+
+    font-weight:800;
+
+    letter-spacing:.5px;
+
+}
+
+
+
+.brand-task{
+
+    color:#ffffff;
+
+}
+
+
+
+.brand-it{
+
+    color:#3b82f6;
+
+}
+
+
+
+
+
+.header-tagline{
+
+
+    font-size:13px;
+
+    color:#94a3b8;
+
+    font-weight:400;
+
+    white-space:nowrap;
+
+    padding-left:12px;
+
+    border-left:1px solid #334155;
+
+}
+
+
+
+
+
+
+
+/* ========================= */
+/* RIGHT AREA */
+/* ========================= */
+
+
+.header-right{
+
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+    margin-left:auto;
+
+}
+
+
+
+
+
+/* ========================= */
+/* SEARCH */
+/* ========================= */
+
 
 .header-search{
+
+
     width:360px;
+
     position:relative;
-    margin-left:auto;
-    margin-right:20px;
+
 }
+
+
+
 
 .header-search input{
+
+
     width:100%;
+
     height:40px;
-    border:1px solid #dee2e6;
+
     border-radius:999px;
-    background:#f5f5f5;
+
+    background:#1e293b;
+
+    border:1px solid #334155;
+
+    color:#ffffff;
+
     padding:0 45px 0 16px;
+
     font-size:14px;
+
     outline:none;
+
     transition:.2s;
+
 }
+
+
+
+
+.header-search input::placeholder{
+
+
+    color:#94a3b8;
+
+}
+
+
+
 
 .header-search input:focus{
-    background:#fff;
-    border-color:#0d6efd;
-    box-shadow:0 0 0 2px rgba(13,110,253,.15);
+
+
+    background:#1e293b;
+
+    border-color:#3b82f6;
+
+    box-shadow:0 0 0 2px rgba(59,130,246,.2);
+
 }
+
+
+
 
 .search-icon{
+
+
     position:absolute;
+
     right:15px;
+
     top:50%;
+
     transform:translateY(-50%);
+
     width:18px;
+
     height:18px;
-    opacity:.65;
+
+    opacity:.7;
+
+    filter:brightness(0) invert(1);
+
     pointer-events:none;
+
 }
 
-/* ================= SEARCH RESULT ================= */
+
+
+
+
+
+
+/* ========================= */
+/* SEARCH RESULT */
+/* ========================= */
+
 
 .search-result{
+
+
     position:absolute;
+
     top:46px;
+
     left:0;
+
     width:100%;
-    background:#fff;
+
+    background:#ffffff;
+
     border-radius:10px;
-    box-shadow:0 8px 20px rgba(0,0,0,.15);
+
+    box-shadow:0 8px 20px rgba(0,0,0,.25);
+
     overflow:hidden;
+
     z-index:9999;
+
 }
+
+
+
 
 .search-item{
+
+
     padding:12px 16px;
+
     cursor:pointer;
-    transition:.2s;
+
     font-size:14px;
+
+    color:#334155;
+
+    transition:.2s;
+
 }
+
+
 
 .search-item:hover{
-    background:#f5f5f5;
+
+
+    background:#f1f5f9;
+
 }
 
-/* ================= USER ================= */
+
+
+
+
+
+
+/* ========================= */
+/* NOTIFICATION */
+/* ========================= */
+
+
+.notification-icon{
+
+
+    width:40px;
+
+    height:40px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#ffffff;
+
+    border-radius:50%;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+
+
+
+.notification-icon:hover{
+
+
+    background:#1e293b;
+
+}
+
+
+
+
+
+
+
+/* ========================= */
+/* USER */
+/* ========================= */
+
 
 .user-dropdown-title{
+
+
     display:flex;
+
     align-items:center;
-    gap:8px;
+
+    gap:10px;
+
 }
+
+
+
+
 
 .header-avatar{
+
+
     width:36px !important;
+
     height:36px !important;
+
     min-width:36px;
+
     min-height:36px;
-    max-width:36px;
-    max-height:36px;
+
     border-radius:50%;
+
     object-fit:cover;
+
     display:block;
-    border:1px solid #dee2e6;
+
+    border:2px solid #475569;
+
 }
+
+
+
+
 
 .header-username{
+
+
     font-size:15px;
+
     font-weight:500;
-    color:#212529;
+
+    color:#ffffff;
+
     white-space:nowrap;
+
     line-height:1;
+
 }
+
+
+
+
+
+
 
 #user-dropdown{
+
+
     display:flex !important;
+
     align-items:center !important;
+
     padding:0 !important;
+
 }
 
+
+
+
+
 #user-dropdown::after{
-    margin-left:6px;
+
+
+    margin-left:8px;
+
     vertical-align:middle;
+
+    border-top-color:white;
+
+}
+
+
+
+
+
+
+
+/* ========================= */
+/* HEADER FIX */
+/* ========================= */
+
+
+.header-fixed{
+
+
+    background:#0f172a !important;
+
+    border:none !important;
+
+}
+
+
+
+
+.header-fixed .navbar{
+
+
+    background:#0f172a !important;
+
 }

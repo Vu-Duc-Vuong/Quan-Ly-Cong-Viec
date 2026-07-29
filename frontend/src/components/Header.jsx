@@ -8,280 +8,521 @@ import {
     Form
 } from "react-bootstrap";
 
+
 import {
     Link,
     useNavigate
 } from "react-router-dom";
 
+
+import {
+    Bell
+} from "lucide-react";
+
+
 import "../assets/header.css";
+
+
 
 function Header() {
 
-    const [user, setUser] = useState(null);
 
-    const [keyword, setKeyword] = useState("");
+    const [user,setUser] = useState(null);
+
+    const [keyword,setKeyword] = useState("");
 
     const navigate = useNavigate();
 
-    useEffect(() => {
+
+
+
+
+    useEffect(()=>{
+
 
         const userData = localStorage.getItem("user");
 
-        if (userData) {
+
+        if(userData){
 
             setUser(JSON.parse(userData));
 
         }
 
-    }, []);
 
-    const handleLogout = () => {
+    },[]);
+
+
+
+
+
+
+    const handleLogout=()=>{
+
 
         localStorage.removeItem("user");
+
         localStorage.removeItem("token");
+
 
         setUser(null);
 
+
         navigate("/login");
+
 
     };
 
-    // Đồng bộ với Sidebar
-    const menuItems = [
+
+
+
+
+
+
+
+    const menuItems=[
+
 
         {
-            name: "Trang chủ",
-            path: "/"
+            name:"Trang chủ",
+            path:"/"
         },
 
-        {
-            name: "Công việc",
-            path: "/tasks"
-        },
 
         {
-            name: "Thống kê",
-            path: "/statistics"
+            name:"Công việc",
+            path:"/tasks"
         },
 
-        {
-            name: "Danh mục",
-            path: "/categories"
-        },
 
         {
-            name: "Lịch làm việc",
-            path: "/calendar"
+            name:"Thống kê",
+            path:"/statistics"
         },
 
+
         {
-            name: "Hồ sơ",
-            path: "/profile"
+            name:"Danh mục",
+            path:"/categories"
+        },
+
+
+        {
+            name:"Lịch làm việc",
+            path:"/calendar"
+        },
+
+
+        {
+            name:"Hồ sơ",
+            path:"/profile"
         }
+
 
     ];
 
-    const result = useMemo(() => {
 
-        if (!keyword.trim()) {
+
+
+
+
+
+
+    const result = useMemo(()=>{
+
+
+        if(!keyword.trim()){
 
             return [];
 
         }
 
-        return menuItems.filter(item =>
+
+
+        return menuItems.filter(item=>
 
             item.name
-                .toLowerCase()
-                .includes(keyword.toLowerCase())
+            .toLowerCase()
+            .includes(keyword.toLowerCase())
 
         );
 
-    }, [keyword]);
 
-    const handleGo = (item) => {
+    },[keyword]);
+
+
+
+
+
+
+
+
+    const handleGo=(item)=>{
+
 
         navigate(item.path);
 
         setKeyword("");
 
+
     };
 
-    const handleEnter = (e) => {
 
-        if (
 
-            e.key === "Enter"
+
+
+
+
+
+    const handleEnter=(e)=>{
+
+
+        if(
+
+            e.key==="Enter"
 
             &&
 
-            result.length > 0
+            result.length>0
 
-        ) {
+        ){
 
             handleGo(result[0]);
 
         }
 
+
     };
+
+
+
+
+
+
+
+
 
     return (
 
-        <Navbar
-            bg="white"
-            className="shadow-sm header-fixed py-2"
-        >
+
+        <Navbar className="header-navbar">
+
 
             <Container fluid>
 
-                {/* LOGO */}
 
-                <Navbar.Brand>
 
-                    <strong>
+                {/* BRAND */}
+
+
+                <Navbar.Brand className="brand-area">
+
+
+                    <div className="brand-logo">
+
+
+                        <span className="brand-task">
+
+                            Task
+
+                        </span>
+
+
+                        <span className="brand-it">
+
+                            IT
+
+                        </span>
+
+
+                    </div>
+
+
+
+                    <div className="header-tagline">
 
                         Hệ thống Quản lý công việc
 
-                    </strong>
+                    </div>
+
+
 
                 </Navbar.Brand>
 
-                {/* SEARCH */}
 
-                <div className="header-search">
 
-                    <Form.Control
 
-                        value={keyword}
 
-                        onChange={e => setKeyword(e.target.value)}
 
-                        onKeyDown={handleEnter}
 
-                        placeholder="Tìm kiếm chức năng..."
 
-                    />
 
-                    <img
+                {/* RIGHT AREA */}
 
-                        src="http://localhost:3000/images/kinhlup.png"
 
-                        alt="search"
+                <div className="header-right">
 
-                        className="search-icon"
 
-                    />
 
-                    {
 
-                        result.length > 0 && (
 
-                            <div className="search-result">
+                    {/* SEARCH */}
 
-                                {
 
-                                    result.map(item => (
+                    <div className="header-search">
 
-                                        <div
 
-                                            key={item.path}
+                        <Form.Control
 
-                                            className="search-item"
 
-                                            onClick={() => handleGo(item)}
+                            value={keyword}
 
-                                        >
 
-                                            {item.name}
+                            onChange={e=>setKeyword(e.target.value)}
 
-                                        </div>
 
-                                    ))
+                            onKeyDown={handleEnter}
 
-                                }
 
-                            </div>
+                            placeholder="Tìm kiếm chức năng..."
 
-                        )
 
-                    }
+                        />
 
-                </div>
 
-                {/* USER */}
 
-                <Nav className="ms-auto">
+                        <img
 
-                    <NavDropdown
 
-                        align="end"
+                            src="http://localhost:3000/images/kinhlup.png"
 
-                        id="user-dropdown"
 
-                        title={
+                            alt="search"
 
-                            <div className="user-dropdown-title">
 
-                                <img
+                            className="search-icon"
 
-                                    src={
-                                        user?.avatar
-                                            ? `http://localhost:3000/images/${user.avatar}`
-                                            : "http://localhost:3000/images/avatar.png"
+
+                        />
+
+
+
+
+
+
+
+                        {
+
+                            result.length>0 && (
+
+
+                                <div className="search-result">
+
+
+                                    {
+
+                                        result.map(item=>(
+
+
+                                            <div
+
+
+                                                key={item.path}
+
+
+                                                className="search-item"
+
+
+                                                onClick={()=>handleGo(item)}
+
+
+                                            >
+
+
+                                                {item.name}
+
+
+                                            </div>
+
+
+                                        ))
+
                                     }
 
-                                    alt="avatar"
 
-                                    className="header-avatar"
+                                </div>
 
-                                />
 
-                                <span className="header-username">
-
-                                    {user?.fullName || "Tài khoản"}
-
-                                </span>
-
-                            </div>
+                            )
 
                         }
 
-                    >
 
-                        <NavDropdown.Item
 
-                            as={Link}
+                    </div>
 
-                            to="/profile"
+
+
+
+
+
+
+
+
+                    {/* NOTIFICATION */}
+
+
+                    <div className="notification-icon">
+
+
+                        <Bell size={21}/>
+
+
+                    </div>
+
+
+
+
+
+
+
+
+
+                    {/* USER */}
+
+
+                    <Nav>
+
+
+                        <NavDropdown
+
+
+                            align="end"
+
+
+                            id="user-dropdown"
+
+
+                            title={
+
+
+
+                                <div className="user-dropdown-title">
+
+
+
+                                    <img
+
+
+                                        src={
+
+                                            user?.avatar
+
+                                            ?
+
+                                            `http://localhost:3000/images/${user.avatar}`
+
+                                            :
+
+                                            "http://localhost:3000/images/avatar.png"
+
+                                        }
+
+
+                                        alt="avatar"
+
+
+                                        className="header-avatar"
+
+
+                                    />
+
+
+
+
+
+                                    <span className="header-username">
+
+
+                                        {user?.fullName || "Tài khoản"}
+
+
+                                    </span>
+
+
+
+                                </div>
+
+
+                            }
+
 
                         >
 
-                            Hồ sơ
 
-                        </NavDropdown.Item>
 
-                        <NavDropdown.Divider />
 
-                        <NavDropdown.Item
+                            <NavDropdown.Item
 
-                            onClick={handleLogout}
+                                as={Link}
 
-                        >
+                                to="/profile"
 
-                            Đăng xuất
+                            >
 
-                        </NavDropdown.Item>
+                                Hồ sơ
 
-                    </NavDropdown>
+                            </NavDropdown.Item>
 
-                </Nav>
+
+
+
+
+                            <NavDropdown.Divider />
+
+
+
+
+
+                            <NavDropdown.Item
+
+                                onClick={handleLogout}
+
+                            >
+
+                                Đăng xuất
+
+                            </NavDropdown.Item>
+
+
+
+
+                        </NavDropdown>
+
+
+                    </Nav>
+
+
+
+
+
+                </div>
+
+
+
+
 
             </Container>
 
+
         </Navbar>
+
 
     );
 
+
 }
+
+
 
 export default Header;

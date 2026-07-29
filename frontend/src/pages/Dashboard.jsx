@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 
 import {
+    FilePenLine
+} from "lucide-react";
+
+import {
     getTasks
 } from "../services/taskService";
 
@@ -9,7 +13,6 @@ function Dashboard() {
 
 
     const [tasks,setTasks] = useState([]);
-
 
 
 
@@ -32,14 +35,11 @@ function Dashboard() {
 
 
 
-
-
     useEffect(()=>{
 
         loadTasks();
 
     },[]);
-
 
 
 
@@ -74,7 +74,6 @@ function Dashboard() {
 
 
     const overdue = tasks.filter(task=>{
-
 
         if(!task.deadline){
 
@@ -119,6 +118,7 @@ function Dashboard() {
 
 
 
+
     const convertPriority=(priority)=>{
 
         switch(priority){
@@ -145,44 +145,45 @@ function Dashboard() {
 
 
 
-
-
     const cards = [
 
         {
             title:"Tổng công việc",
-            value:total
+            value:total,
+            color:"stat-blue"
         },
 
         {
             title:"Chưa làm",
-            value:todo
+            value:todo,
+            color:"stat-blue"
         },
 
         {
             title:"Đang làm",
-            value:doing
+            value:doing,
+            color:"stat-orange"
         },
 
         {
             title:"Hoàn thành",
-            value:done
+            value:done,
+            color:"stat-green"
         },
 
         {
             title:"Ưu tiên cao",
-            value:high
+            value:high,
+            color:"stat-red"
         },
 
         {
             title:"Quá hạn",
-            value:overdue
+            value:overdue,
+            color:"stat-red"
         }
 
     ];
-
-
-
 
 
 
@@ -216,7 +217,6 @@ function Dashboard() {
 
 
 
-
             <div className="row g-3 mb-4">
 
 
@@ -225,12 +225,14 @@ function Dashboard() {
 
 
                         <div 
-                        className="col-md-4"
-                        key={index}
+                            className="col-md-4"
+                            key={index}
                         >
 
 
-                            <div className="metric-card">
+                            <div 
+                                className={`metric-card ${card.color}`}
+                            >
 
 
                                 <div className="metric-title">
@@ -260,8 +262,6 @@ function Dashboard() {
 
 
             </div>
-
-
 
 
 
@@ -342,6 +342,7 @@ function Dashboard() {
 
 
                         {
+
                             tasks.slice(0,5).map(task=>(
 
 
@@ -350,9 +351,32 @@ function Dashboard() {
 
                                     <td>
 
-                                        {task.title}
+
+                                        <div className="task-name-cell">
+
+
+                                            <FilePenLine
+
+                                                size={17}
+
+                                                className="task-name-icon"
+
+                                            />
+
+
+                                            <span>
+
+                                                {task.title}
+
+                                            </span>
+
+
+                                        </div>
+
 
                                     </td>
+
+
 
 
 
@@ -360,9 +384,47 @@ function Dashboard() {
 
                                     <td>
 
-                                        {convertStatus(task.status)}
+
+                                        <span
+
+                                            className={
+
+                                                `status-badge ${
+                                                    
+                                                    task.status==="TODO"
+
+                                                    ?
+
+                                                    "status-todo"
+
+                                                    :
+
+                                                    task.status==="DOING"
+
+                                                    ?
+
+                                                    "status-doing"
+
+                                                    :
+
+                                                    "status-done"
+
+                                                }`
+
+                                            }
+
+                                        >
+
+                                            {convertStatus(task.status)}
+
+
+                                        </span>
+
 
                                     </td>
+
+
+
 
 
 
@@ -370,9 +432,28 @@ function Dashboard() {
 
                                     <td>
 
-                                        {convertPriority(task.priority)}
+
+                                        <span
+
+                                            className={
+
+                                                `priority-badge priority-${task.priority?.toLowerCase()}`
+
+                                            }
+
+                                        >
+
+
+                                            {convertPriority(task.priority)}
+
+
+                                        </span>
+
 
                                     </td>
+
+
+
 
 
 
@@ -405,6 +486,7 @@ function Dashboard() {
 
 
                             ))
+
                         }
 
 
