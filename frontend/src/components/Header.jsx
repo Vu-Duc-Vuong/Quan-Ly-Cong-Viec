@@ -34,6 +34,8 @@ function Header() {
     const navigate = useNavigate();
 
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
 
 
 
@@ -72,7 +74,6 @@ function Header() {
 
 
     };
-
 
 
 
@@ -160,6 +161,8 @@ function Header() {
 
 
 
+
+
     const handleGo=(item)=>{
 
 
@@ -197,6 +200,8 @@ function Header() {
 
 
     };
+
+
 
 
 
@@ -276,7 +281,7 @@ function Header() {
                         <img
 
 
-                            src="http://localhost:3000/images/kinhlup.png"
+                            src={`${API_URL}/images/kinhlup.png`}
 
 
                             alt="search"
@@ -327,6 +332,7 @@ function Header() {
 
 
                                         ))
+
 
                                     }
 
@@ -400,11 +406,11 @@ function Header() {
 
                                             ?
 
-                                            `http://localhost:3000/images/${user.avatar}`
+                                            `${API_URL}/images/${user.avatar}`
 
                                             :
 
-                                            "http://localhost:3000/images/avatar.png"
+                                            `${API_URL}/images/avatar.png`
 
                                         }
 
@@ -459,6 +465,8 @@ function Header() {
 
 
                             <NavDropdown.Divider />
+
+
 
 
 

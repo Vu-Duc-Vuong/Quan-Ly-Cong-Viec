@@ -89,30 +89,28 @@ function Profile() {
 
 
 
-    const getAvatar = ()=>{
+const getAvatar = ()=>{
+
+    const API_URL = import.meta.env.VITE_API_URL;
 
 
-        if(!user.avatar){
+    if(!user.avatar){
 
-            return "http://localhost:3000/images/avatar.png";
+        return `${API_URL}/images/avatar.png`;
 
-        }
-
-
-
-        if(user.avatar.startsWith("http")){
-
-            return user.avatar;
-
-        }
+    }
 
 
+    if(user.avatar.startsWith("http")){
 
-        return `http://localhost:3000/images/${user.avatar}`;
+        return user.avatar;
+
+    }
 
 
-    };
+    return `${API_URL}/images/${user.avatar}`;
 
+};
 
 
 
