@@ -159,7 +159,7 @@ Authorization: Bearer <access_token>
 ## 1. Clone project
 
 ```bash
-git clone <repository-url>
+git clone (https://github.com/Vu-Duc-Vuong/Quan-Ly-Cong-Viec)
 ```
 
 ---
@@ -210,7 +210,7 @@ npm run dev
 
 # ⚙️ Biến môi trường
 
-Ví dụ file `.env`
+file `.env`
 
 ```env
 DB_HOST=localhost
@@ -292,7 +292,7 @@ npm run lint
 
 # 👥 Phân công thành viên
 
-## Thành viên 1
+## Đỗ Hữu Vũ
 
 * Đăng ký
 * Đăng nhập
@@ -302,7 +302,7 @@ npm run lint
 
 ---
 
-## Thành viên 2
+## Vũ Đức Vượng
 
 * CRUD Công việc
 * Deadline
@@ -312,7 +312,7 @@ npm run lint
 
 ---
 
-## Thành viên 3
+## Đặng Hữu Sơn
 
 * CRUD Danh mục
 * Dashboard
@@ -322,18 +322,6 @@ npm run lint
 
 ---
 
-# 📸 Giao diện
-
-Có thể bổ sung các ảnh chụp màn hình sau:
-
-* Trang đăng nhập
-* Trang đăng ký
-* Dashboard
-* Danh sách công việc
-* Trang danh mục
-* Hồ sơ cá nhân
-
----
 
 # 📄 Giấy phép
 
