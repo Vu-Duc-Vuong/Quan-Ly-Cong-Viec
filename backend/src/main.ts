@@ -15,10 +15,17 @@ async function bootstrap() {
 
   app.enableCors({
 
-    origin: [
-      'http://localhost:5173',
-      'https://humble-capybara-v6q75wj4xjgw2xrp7-5173.app.github.dev'
-    ],
+    origin: (origin, callback) => {
+      if (
+        !origin ||
+        origin === 'http://localhost:5173' ||
+        /\.app\.github\.dev$/.test(origin)
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
 
     credentials: true,
 
