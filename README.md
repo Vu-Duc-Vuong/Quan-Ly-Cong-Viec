@@ -170,39 +170,16 @@ Di chuyển vào thư mục
 
 ```bash
 cd backend
-```
-
-Cài đặt
-
-```bash
 npm install
-```
-
-Chạy
-
-```bash
 npm run start:dev
 ```
 
----
-
 ## 3. Frontend
 
-Di chuyển
 
 ```bash
 cd frontend
-```
-
-Cài đặt
-
-```bash
 npm install
-```
-
-Chạy
-
-```bash
 npm run dev
 ```
 

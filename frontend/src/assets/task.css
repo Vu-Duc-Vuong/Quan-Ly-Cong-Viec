@@ -4,7 +4,10 @@
 
 }
 
-
+.task-table td,
+.task-table th {
+    vertical-align: middle;
+}
 /* Card chung */
 
 .card {
@@ -342,5 +345,81 @@ input[type="checkbox"]{
 .task-actions button{
 
     cursor:pointer;
+
+}
+/* Căn giữa nội dung trong bảng */
+.task-table td,
+.task-table th {
+    vertical-align: middle !important;
+}
+
+
+/* Icon mô tả */
+.task-icon {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    height:30px;
+
+}
+
+
+/* Status button */
+.status-button {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    height:30px;
+
+    border:none;
+
+}
+
+
+
+/* Priority badge */
+.priority-badge {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    height:30px;
+
+}
+
+
+
+/* Action buttons */
+.action-center {
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    height:32px;
+
+}
+
+
+.action-center button {
+
+    height:32px;
+
+    display:flex;
+
+    align-items:center;
 
 }

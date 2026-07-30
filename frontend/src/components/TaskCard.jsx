@@ -127,13 +127,9 @@ overlay={
 
 
 <span
-
-className="description-icon ms-2"
-
+className="description-icon ms-2 task-icon"
 >
-
 📝
-
 </span>
 
 
@@ -212,17 +208,13 @@ Bấm để đổi trạng thái
 
 
 <button
-
 type="button"
-
 aria-label="Đổi trạng thái công việc"
-
 className={
-
 `
 status-badge 
+status-button
 cursor-pointer
-
 ${
 currentStatus === "TODO"
 
@@ -288,7 +280,7 @@ statusLabels[currentStatus]
 className={
 
 `
-priority 
+priority priority-badge
 ${
 task.priority
 
@@ -376,7 +368,7 @@ Chưa có
 <td>
 
 
-<div className="task-actions">
+<div className="task-actions action-center">
 
 
 <Button

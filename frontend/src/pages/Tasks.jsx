@@ -27,45 +27,45 @@ import {
 function Tasks() {
 
 
-    const [tasks,setTasks] = useState([]);
+    const [tasks, setTasks] = useState([]);
 
-    const [allTasks,setAllTasks] = useState([]);
+    const [allTasks, setAllTasks] = useState([]);
 
-    const [categories,setCategories] = useState([]);
+    const [categories, setCategories] = useState([]);
 
-    const [editId,setEditId] = useState(null);
+    const [editId, setEditId] = useState(null);
 
-    const [keyword,setKeyword] = useState("");
-
-
-    const [statusFilter,setStatusFilter] = useState("ALL");
-
-    const [priorityFilter,setPriorityFilter] = useState("ALL");
-
-    const [categoryFilter,setCategoryFilter] = useState("ALL");
+    const [keyword, setKeyword] = useState("");
 
 
+    const [statusFilter, setStatusFilter] = useState("ALL");
 
-    const [form,setForm] = useState({
+    const [priorityFilter, setPriorityFilter] = useState("ALL");
 
-        title:"",
-        description:"",
-        priority:"MEDIUM",
-        deadline:"",
-        categoryId:""
+    const [categoryFilter, setCategoryFilter] = useState("ALL");
+
+
+
+    const [form, setForm] = useState({
+
+        title: "",
+        description: "",
+        priority: "MEDIUM",
+        deadline: "",
+        categoryId: ""
 
     });
 
 
 
-    const convertStatus=(status)=>{
+    const convertStatus = (status) => {
 
-        const data={
+        const data = {
 
-            ALL:"Tất cả",
-            TODO:"Chưa làm",
-            DOING:"Đang làm",
-            DONE:"Hoàn thành"
+            ALL: "Tất cả",
+            TODO: "Chưa làm",
+            DOING: "Đang làm",
+            DONE: "Hoàn thành"
 
         };
 
@@ -76,14 +76,14 @@ function Tasks() {
 
 
 
-    const convertPriority=(priority)=>{
+    const convertPriority = (priority) => {
 
-        const data={
+        const data = {
 
-            ALL:"Tất cả",
-            LOW:"Thấp",
-            MEDIUM:"Trung bình",
-            HIGH:"Cao"
+            ALL: "Tất cả",
+            LOW: "Thấp",
+            MEDIUM: "Trung bình",
+            HIGH: "Cao"
 
         };
 
@@ -94,9 +94,9 @@ function Tasks() {
 
 
 
-    const loadTasks=async()=>{
+    const loadTasks = async () => {
 
-        try{
+        try {
 
             const response = await getTasks();
 
@@ -105,7 +105,7 @@ function Tasks() {
             setAllTasks(response.data);
 
         }
-        catch(error){
+        catch (error) {
 
             console.log(error);
 
@@ -115,9 +115,9 @@ function Tasks() {
 
 
 
-    const loadCategories=async()=>{
+    const loadCategories = async () => {
 
-        try{
+        try {
 
             const response =
                 await getMember3Categories();
@@ -125,7 +125,7 @@ function Tasks() {
             setCategories(response.data);
 
         }
-        catch(error){
+        catch (error) {
 
             console.log(error);
 
@@ -135,24 +135,24 @@ function Tasks() {
 
 
 
-    useEffect(()=>{
+    useEffect(() => {
 
         loadTasks();
 
         loadCategories();
 
-    },[]);
+    }, []);
 
 
 
 
-    const handleChange=(e)=>{
+    const handleChange = (e) => {
 
         setForm({
 
             ...form,
 
-            [e.target.name]:e.target.value
+            [e.target.name]: e.target.value
 
         });
 
@@ -161,15 +161,15 @@ function Tasks() {
 
 
 
-    const resetForm=()=>{
+    const resetForm = () => {
 
         setForm({
 
-            title:"",
-            description:"",
-            priority:"MEDIUM",
-            deadline:"",
-            categoryId:""
+            title: "",
+            description: "",
+            priority: "MEDIUM",
+            deadline: "",
+            categoryId: ""
 
         });
 
@@ -181,7 +181,7 @@ function Tasks() {
 
 
 
-    const handleCancel=()=>{
+    const handleCancel = () => {
 
         resetForm();
 
@@ -190,12 +190,12 @@ function Tasks() {
 
 
 
-    const handleSubmit=async(e)=>{
+    const handleSubmit = async (e) => {
 
         e.preventDefault();
 
 
-        if(!form.title.trim()){
+        if (!form.title.trim()) {
 
             alert("Nhập tên công việc");
 
@@ -204,28 +204,64 @@ function Tasks() {
         }
 
 
-        try{
+        try {
 
-            if(editId){
 
-                await updateTask(editId,form);
+            const data = {
+
+                title: form.title.trim(),
+
+                description:
+                    form.description.trim() || undefined,
+
+
+                priority: form.priority,
+
+
+                deadline:
+                    form.deadline || undefined,
+
+
+                categoryId:
+                    form.categoryId
+                        ?
+                        Number(form.categoryId)
+                        :
+                        undefined
+
+            };
+
+
+
+            if (editId) {
+
+                await updateTask(
+                    editId,
+                    data
+                );
 
             }
-            else{
+            else {
 
-                await createTask(form);
+                await createTask(
+                    data
+                );
 
             }
+
 
 
             resetForm();
 
             loadTasks();
 
-        }
-        catch(error){
 
-            console.log(error);
+        }
+        catch (error) {
+
+            console.log(
+                error.response?.data
+            );
 
         }
 
@@ -233,7 +269,7 @@ function Tasks() {
 
 
 
-    const handleEdit=(task)=>{
+    const handleEdit = (task) => {
 
 
         setEditId(task.id);
@@ -241,28 +277,32 @@ function Tasks() {
 
         setForm({
 
-            title:task.title,
+            title: task.title,
 
-            description:task.description || "",
+            description: task.description || "",
 
-            priority:task.priority,
+            priority: task.priority,
 
             deadline:
-            task.deadline
-            ?
-            task.deadline.substring(0,10)
-            :
-            "",
+                task.deadline
+                    ?
+                    task.deadline.substring(0, 10)
+                    :
+                    "",
 
 
             categoryId:
-            task.category?.id || ""
+                task.category?.id
+                    ?
+                    Number(task.category.id)
+                    :
+                    undefined
 
         });
 
 
     };
-    const handleChangeStatus=async(task,status)=>{
+    const handleChangeStatus = async (task, status) => {
 
 
         await updateTask(
@@ -271,25 +311,25 @@ function Tasks() {
 
             {
 
-                title:task.title,
+                title: task.title,
 
-                description:task.description || "",
+                description: task.description || "",
 
-                priority:task.priority,
+                priority: task.priority,
 
                 deadline:
-                task.deadline
-                ?
-                task.deadline.substring(0,10)
-                :
-                "",
+                    task.deadline
+                        ?
+                        task.deadline.substring(0, 10)
+                        :
+                        "",
 
 
-                status:status,
+                status: status,
 
 
                 categoryId:
-                task.category?.id || ""
+                    task.category?.id || ""
 
             }
 
@@ -302,52 +342,52 @@ function Tasks() {
 
 
 
-    const handleDelete=async(id)=>{
+    const handleDelete = async (id) => {
 
-        try{
+        try {
 
             await deleteTask(id);
 
             loadTasks();
 
         }
-        catch(error){
+        catch (error) {
 
             console.log(error);
 
         }
 
-    };    const applyFilter=(data)=>{
+    }; const applyFilter = (data) => {
 
 
-        let result=[...data];
+        let result = [...data];
 
 
-        if(statusFilter!=="ALL"){
+        if (statusFilter !== "ALL") {
 
-            result=result.filter(
-                task=>task.status===statusFilter
+            result = result.filter(
+                task => task.status === statusFilter
             );
 
         }
 
 
-        if(priorityFilter!=="ALL"){
+        if (priorityFilter !== "ALL") {
 
-            result=result.filter(
-                task=>task.priority===priorityFilter
+            result = result.filter(
+                task => task.priority === priorityFilter
             );
 
         }
 
 
-        if(categoryFilter!=="ALL"){
+        if (categoryFilter !== "ALL") {
 
-            result=result.filter(
-                task=>
-                String(task.category?.id)
-                ===
-                String(categoryFilter)
+            result = result.filter(
+                task =>
+                    String(task.category?.id)
+                    ===
+                    String(categoryFilter)
             );
 
         }
@@ -361,45 +401,45 @@ function Tasks() {
 
 
 
-    const filterData=(
+    const filterData = (
 
         data,
-        status=statusFilter,
-        priority=priorityFilter,
-        category=categoryFilter
+        status = statusFilter,
+        priority = priorityFilter,
+        category = categoryFilter
 
-    )=>{
-
-
-        let result=[...data];
+    ) => {
 
 
-        if(status!=="ALL"){
+        let result = [...data];
 
-            result=result.filter(
-                task=>task.status===status
+
+        if (status !== "ALL") {
+
+            result = result.filter(
+                task => task.status === status
             );
 
         }
 
 
-        if(priority!=="ALL"){
+        if (priority !== "ALL") {
 
-            result=result.filter(
-                task=>task.priority===priority
+            result = result.filter(
+                task => task.priority === priority
             );
 
         }
 
 
-        if(category!=="ALL"){
+        if (category !== "ALL") {
 
-            result=result.filter(
+            result = result.filter(
 
-                task=>
-                String(task.category?.id)
-                ===
-                String(category)
+                task =>
+                    String(task.category?.id)
+                    ===
+                    String(category)
 
             );
 
@@ -413,7 +453,7 @@ function Tasks() {
 
 
 
-    const handleStatus=(status)=>{
+    const handleStatus = (status) => {
 
 
         setStatusFilter(status);
@@ -436,7 +476,7 @@ function Tasks() {
 
 
 
-    const handlePriority=(priority)=>{
+    const handlePriority = (priority) => {
 
 
         setPriorityFilter(priority);
@@ -459,7 +499,7 @@ function Tasks() {
 
 
 
-    const handleCategory=(category)=>{
+    const handleCategory = (category) => {
 
 
         setCategoryFilter(category);
@@ -482,10 +522,10 @@ function Tasks() {
 
 
 
-    const handleSearch=async()=>{
+    const handleSearch = async () => {
 
 
-        if(!keyword.trim()){
+        if (!keyword.trim()) {
 
             setTasks(
                 filterData(allTasks)
@@ -497,7 +537,7 @@ function Tasks() {
 
 
 
-        try{
+        try {
 
 
             const response =
@@ -513,7 +553,7 @@ function Tasks() {
 
 
         }
-        catch(error){
+        catch (error) {
 
             console.log(error);
 
@@ -526,7 +566,7 @@ function Tasks() {
 
 
 
-    const resetFilter=()=>{
+    const resetFilter = () => {
 
 
         setStatusFilter("ALL");
@@ -548,648 +588,648 @@ function Tasks() {
     return (
 
 
-<div className="task-page">
+        <div className="task-page">
 
 
-<h2 className="mb-4">
+            <h2 className="mb-4">
 
-Quản lý công việc
+                Quản lý công việc
 
-</h2>
+            </h2>
 
 
 
 
-<Row className="g-4">
+            <Row className="g-4">
 
 
 
-<Col md={4}>
+                <Col md={4}>
 
 
-<Card className="shadow-sm sticky-form">
+                    <Card className="shadow-sm sticky-form">
 
 
-<Card.Body>
+                        <Card.Body>
 
 
-<h5>
+                            <h5>
 
-{
-editId
-?
-"Sửa công việc"
-:
-"Thêm công việc"
+                                {
+                                    editId
+                                        ?
+                                        "Sửa công việc"
+                                        :
+                                        "Thêm công việc"
 
-}
+                                }
 
-</h5>
+                            </h5>
 
 
 
-<Form onSubmit={handleSubmit}>
+                            <Form onSubmit={handleSubmit}>
 
 
-<Form.Control
+                                <Form.Control
 
-className="mb-3"
+                                    className="mb-3"
 
-name="title"
+                                    name="title"
 
-placeholder="Tên công việc"
+                                    placeholder="Tên công việc"
 
-value={form.title}
+                                    value={form.title}
 
-onChange={handleChange}
+                                    onChange={handleChange}
 
-/>
+                                />
 
 
 
 
-<Form.Control
+                                <Form.Control
 
-className="mb-3"
+                                    className="mb-3"
 
-name="description"
+                                    name="description"
 
-placeholder="Mô tả"
+                                    placeholder="Mô tả"
 
-value={form.description}
+                                    value={form.description}
 
-onChange={handleChange}
+                                    onChange={handleChange}
 
-/>
+                                />
 
 
 
 
-<Form.Select
+                                <Form.Select
 
-className="mb-3"
+                                    className="mb-3"
 
-name="priority"
+                                    name="priority"
 
-value={form.priority}
+                                    value={form.priority}
 
-onChange={handleChange}
+                                    onChange={handleChange}
 
->
+                                >
 
 
-<option value="LOW">
+                                    <option value="LOW">
 
-Thấp
+                                        Thấp
 
-</option>
+                                    </option>
 
 
-<option value="MEDIUM">
+                                    <option value="MEDIUM">
 
-Trung bình
+                                        Trung bình
 
-</option>
+                                    </option>
 
 
-<option value="HIGH">
+                                    <option value="HIGH">
 
-Cao
+                                        Cao
 
-</option>
+                                    </option>
 
 
-</Form.Select>
+                                </Form.Select>
 
 
 
 
 
-<Form.Select
+                                <Form.Select
 
-className="mb-3"
+                                    className="mb-3"
 
-name="categoryId"
+                                    name="categoryId"
 
-value={form.categoryId}
+                                    value={form.categoryId}
 
-onChange={handleChange}
+                                    onChange={handleChange}
 
->
+                                >
 
 
-<option value="">
+                                    <option value="">
 
--- Chọn danh mục --
+                                        -- Chọn danh mục --
 
-</option>
+                                    </option>
 
 
 
-{
+                                    {
 
-categories.map(category=>(
+                                        categories.map(category => (
 
 
-<option
+                                            <option
 
-key={category.id}
+                                                key={category.id}
 
-value={category.id}
+                                                value={category.id}
 
->
+                                            >
 
-{category.name}
+                                                {category.name}
 
-</option>
+                                            </option>
 
 
-))
+                                        ))
 
-}
+                                    }
 
 
-</Form.Select>
+                                </Form.Select>
 
 
 
 
 
-<Form.Control
+                                <Form.Control
 
-className="mb-3"
+                                    className="mb-3"
 
-type="date"
+                                    type="date"
 
-name="deadline"
+                                    name="deadline"
 
-value={form.deadline}
+                                    value={form.deadline}
 
-min="2000-01-01"
+                                    min="2000-01-01"
 
-max="2100-12-31"
+                                    max="2100-12-31"
 
-onChange={handleChange}
+                                    onChange={handleChange}
 
-/>
+                                />
 
 
 
-<div className="d-flex gap-2">
+                                <div className="d-flex gap-2">
 
 
-<Button
+                                    <Button
 
-className="flex-fill"
+                                        className="flex-fill"
 
-type="submit"
+                                        type="submit"
 
->
+                                    >
 
-{
+                                        {
 
-editId
-?
-"Lưu thay đổi"
-:
-"Thêm công việc"
+                                            editId
+                                                ?
+                                                "Lưu thay đổi"
+                                                :
+                                                "Thêm công việc"
 
-}
+                                        }
 
-</Button>
+                                    </Button>
 
 
 
-{
+                                    {
 
-editId &&
+                                        editId &&
 
 
-<Button
+                                        <Button
 
-variant="outline-secondary"
+                                            variant="outline-secondary"
 
-type="button"
+                                            type="button"
 
-onClick={handleCancel}
+                                            onClick={handleCancel}
 
->
+                                        >
 
-Hủy
+                                            Hủy
 
-</Button>
+                                        </Button>
 
 
-}
+                                    }
 
 
-</div>
+                                </div>
 
 
-</Form>
+                            </Form>
 
 
-</Card.Body>
+                        </Card.Body>
 
 
-</Card>
+                    </Card>
 
 
-</Col>
+                </Col>
 
 
 
 
 
-<Col md={8}>
+                <Col md={8}>
 
 
-<Card className="shadow-sm mb-4">
+                    <Card className="shadow-sm mb-4">
 
 
-<Card.Body>
+                        <Card.Body>
 
 
-<h5>
+                            <h5>
 
-Tìm kiếm và lọc
+                                Tìm kiếm và lọc
 
-</h5>
+                            </h5>
 
 
 
 
-<div className="search-box mb-3">
+                            <div className="search-box mb-3">
 
 
-<Form.Control
+                                <Form.Control
 
-placeholder="Nhập tên công việc"
+                                    placeholder="Nhập tên công việc"
 
-value={keyword}
+                                    value={keyword}
 
-onChange={
-e=>setKeyword(e.target.value)
-}
+                                    onChange={
+                                        e => setKeyword(e.target.value)
+                                    }
 
-/>
+                                />
 
 
-<Button
+                                <Button
 
-onClick={handleSearch}
+                                    onClick={handleSearch}
 
->
+                                >
 
-Tìm
+                                    Tìm
 
-</Button>
+                                </Button>
 
 
-</div>
+                            </div>
 
 
 
 
 
-<div className="filter-line">
+                            <div className="filter-line">
 
 
-<strong>
+                                <strong>
 
-Trạng thái:
+                                    Trạng thái:
 
-</strong>
+                                </strong>
 
 
 
-<div className="filter-buttons">
+                                <div className="filter-buttons">
 
 
-{
+                                    {
 
-["ALL","TODO","DOING","DONE"]
+                                        ["ALL", "TODO", "DOING", "DONE"]
 
-.map(status=>(
+                                            .map(status => (
 
 
-<Button
+                                                <Button
 
-key={status}
+                                                    key={status}
 
-size="sm"
+                                                    size="sm"
 
-variant={
-statusFilter===status
-?
-"primary"
-:
-"outline-secondary"
-}
+                                                    variant={
+                                                        statusFilter === status
+                                                            ?
+                                                            "primary"
+                                                            :
+                                                            "outline-secondary"
+                                                    }
 
-onClick={()=>handleStatus(status)}
+                                                    onClick={() => handleStatus(status)}
 
->
+                                                >
 
 
-{convertStatus(status)}
+                                                    {convertStatus(status)}
 
 
-</Button>
+                                                </Button>
 
 
-))
+                                            ))
 
 
-}
+                                    }
 
 
-</div>
+                                </div>
 
 
-</div>
+                            </div>
 
 
 
 
 
-<div className="filter-line">
+                            <div className="filter-line">
 
 
-<strong>
+                                <strong>
 
-Mức ưu tiên:
+                                    Mức ưu tiên:
 
-</strong>
+                                </strong>
 
 
-<div className="filter-buttons">
+                                <div className="filter-buttons">
 
 
-{
+                                    {
 
-["ALL","LOW","MEDIUM","HIGH"]
+                                        ["ALL", "LOW", "MEDIUM", "HIGH"]
 
-.map(priority=>(
+                                            .map(priority => (
 
 
-<Button
+                                                <Button
 
-key={priority}
+                                                    key={priority}
 
-size="sm"
+                                                    size="sm"
 
-variant={
-priorityFilter===priority
-?
-"primary"
-:
-"outline-secondary"
-}
+                                                    variant={
+                                                        priorityFilter === priority
+                                                            ?
+                                                            "primary"
+                                                            :
+                                                            "outline-secondary"
+                                                    }
 
-onClick={()=>handlePriority(priority)}
+                                                    onClick={() => handlePriority(priority)}
 
->
+                                                >
 
 
-{convertPriority(priority)}
+                                                    {convertPriority(priority)}
 
 
-</Button>
+                                                </Button>
 
 
-))
+                                            ))
 
 
-}
+                                    }
 
 
-</div>
+                                </div>
 
 
-</div>
+                            </div>
 
 
 
 
 
-<div className="filter-line">
+                            <div className="filter-line">
 
 
-<strong>
+                                <strong>
 
-Danh mục:
+                                    Danh mục:
 
-</strong>
+                                </strong>
 
 
 
-<Form.Select
+                                <Form.Select
 
-className="category-filter"
+                                    className="category-filter"
 
-size="sm"
+                                    size="sm"
 
-value={categoryFilter}
+                                    value={categoryFilter}
 
-onChange={
-e=>handleCategory(e.target.value)
-}
+                                    onChange={
+                                        e => handleCategory(e.target.value)
+                                    }
 
->
+                                >
 
 
-<option value="ALL">
+                                    <option value="ALL">
 
-Tất cả
+                                        Tất cả
 
-</option>
+                                    </option>
 
 
 
-{
+                                    {
 
-categories.map(category=>(
+                                        categories.map(category => (
 
 
-<option
+                                            <option
 
-key={category.id}
+                                                key={category.id}
 
-value={category.id}
+                                                value={category.id}
 
->
+                                            >
 
-{category.name}
+                                                {category.name}
 
-</option>
+                                            </option>
 
 
-))
+                                        ))
 
-}
+                                    }
 
 
-</Form.Select>
+                                </Form.Select>
 
 
 
 
-<Button
+                                <Button
 
-size="sm"
+                                    size="sm"
 
-variant="outline-secondary"
+                                    variant="outline-secondary"
 
-onClick={resetFilter}
+                                    onClick={resetFilter}
 
->
+                                >
 
-Đặt lại
+                                    Đặt lại
 
-</Button>
+                                </Button>
 
 
-</div>
+                            </div>
 
 
 
-</Card.Body>
+                        </Card.Body>
 
 
-</Card>
+                    </Card>
 
 
 
 
 
-<Card className="shadow-sm task-table-card">
+                    <Card className="shadow-sm task-table-card">
 
 
-<Card.Body>
+                        <Card.Body>
 
 
-<h5>
+                            <h5>
 
-Danh sách công việc
+                                Danh sách công việc
 
-</h5>
+                            </h5>
 
 
 
 
-<div className="table-responsive">
+                            <div className="table-responsive">
 
 
-<table className="table table-hover align-middle task-table">
+                                <table className="table table-hover align-middle task-table">
 
 
-<thead>
+                                    <thead>
 
 
-<tr>
+                                        <tr>
 
-<th>Tên</th>
+                                            <th>Tên</th>
 
-<th>Danh mục</th>
+                                            <th>Danh mục</th>
 
-<th>Trạng thái</th>
+                                            <th>Trạng thái</th>
 
-<th>Mức ưu tiên</th>
+                                            <th>Mức ưu tiên</th>
 
-<th>Hạn hoàn thành</th>
+                                            <th>Hạn hoàn thành</th>
 
-<th>Thao tác</th>
+                                            <th>Thao tác</th>
 
-</tr>
+                                        </tr>
 
 
-</thead>
+                                    </thead>
 
 
 
 
-<tbody>
+                                    <tbody>
 
 
-{
+                                        {
 
-tasks.length===0
+                                            tasks.length === 0
 
 
-?
+                                                ?
 
-<tr>
+                                                <tr>
 
-<td
+                                                    <td
 
-colSpan="6"
+                                                        colSpan="6"
 
-className="text-center text-muted"
+                                                        className="text-center text-muted"
 
->
+                                                    >
 
-Không có công việc
+                                                        Không có công việc
 
-</td>
+                                                    </td>
 
-</tr>
+                                                </tr>
 
 
-:
+                                                :
 
 
-tasks.map(task=>(
+                                                tasks.map(task => (
 
 
-<TaskCard
+                                                    <TaskCard
 
-key={task.id}
+                                                        key={task.id}
 
-task={task}
+                                                        task={task}
 
-onChangeStatus={handleChangeStatus}
+                                                        onChangeStatus={handleChangeStatus}
 
-onEdit={handleEdit}
+                                                        onEdit={handleEdit}
 
-onDelete={handleDelete}
+                                                        onDelete={handleDelete}
 
-/>
+                                                    />
 
 
-))
+                                                ))
 
 
-}
+                                        }
 
 
-</tbody>
+                                    </tbody>
 
 
-</table>
+                                </table>
 
 
-</div>
+                            </div>
 
 
 
-</Card.Body>
+                        </Card.Body>
 
 
-</Card>
+                    </Card>
 
 
 
-</Col>
+                </Col>
 
 
-</Row>
+            </Row>
 
 
-</div>
+        </div>
 
 
-);
+    );
 
 
 }
