@@ -5,8 +5,6 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 
-// Nếu đã tạo Exception Filter thì bỏ comment dòng dưới
-// import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -22,8 +20,6 @@ app.useGlobalFilters(
     }),
   );
 
-  // Exception Filter toàn cục (thêm khi đã tạo filter)
-  // app.useGlobalFilters(new HttpExceptionFilter());
 
   app.enableCors({
     origin: (origin, callback) => {
